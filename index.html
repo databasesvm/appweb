@@ -325,26 +325,35 @@
     };
 
     function descargarDatos(forzar = false) {
-        // Si hay datos y no forzamos sincronización, no descargue nada
-        const cache = localStorage.getItem('servimoto_data_' + pestanaActiva);
-        if (cache && !forzar) {
-            reportesGlobales = JSON.parse(cache);
-            renderizarLista();
-            return;
+        const contenedor = document.getElementById('contenedorLista');
+        if (!forzar) contenedor.innerHTML = '<div class="loading-list">Sincronizando...</div>';
+
+        const cacheKey = 'servimoto_data_' + pestanaActiva;
+        
+        // Si no forzamos, intentamos cargar local
+        if (!forzar) {
+            const cache = localStorage.getItem(cacheKey);
+            if (cache) {
+                try {
+                    reportesGlobales = JSON.parse(cache);
+                    renderizarLista();
+                    return;
+                } catch(e) { localStorage.removeItem(cacheKey); }
+            }
         }
 
-        // Si no hay cache, haga el fetch normal y guarde el resultado
+        // Llamada al servidor
         fetch(WEB_APP_URL + "?filtro=" + pestanaActiva)
             .then(res => res.json())
             .then(data => {
                 reportesGlobales = data;
-                localStorage.setItem('servimoto_data_' + pestanaActiva, JSON.stringify(data));
+                localStorage.setItem(cacheKey, JSON.stringify(data));
                 renderizarLista();
+            })
+            .catch(err => {
+                contenedor.innerHTML = '<div class="loading-list">Error de conexión. Intente de nuevo.</div>';
             });
     }
-
-    // Cambie el onclick del botón sync en el HTML para que fuerce:
-    // onclick="descargarDatos(true)"
 
     function cambiarPestana(pestana) {
         if (pestanaActiva === pestana) return; // Si ya está en esa pestaña, ignora el toque
@@ -371,40 +380,27 @@
         contenedor.innerHTML = '';
         
         if(reportesGlobales.length === 0) {
-            const mensaje = (pestanaActiva === 'recientes') ? 'No hay ningún reporte el día de hoy.' : 'No hay historial de ayer ni antier.';
+            const mensaje = (pestanaActiva === 'recientes') ? 'No hay reportes hoy.' : 'No hay historial reciente.';
             contenedor.innerHTML = `<div class="loading-list">${mensaje}</div>`;
             return;
         }
 
         reportesGlobales.forEach((item, index) => {
-            let fLista = item.fechaLista || item.fecha || "---";
-
-            let imgUrl = 'https://placehold.co/60x60/e0e0e0/888?text=NO+IMG';
-            if(item.foto && item.foto.includes('id=')) {
-                const id = item.foto.split('id=')[1].split('&')[0];
-                imgUrl = 'https://lh3.googleusercontent.com/d/' + id;
-            }
-
-            // Escudo de conversión para el valor
-            let numValor = 0;
-            if(item.valor) {
-                let strLimpio = item.valor.toString().replace(/[^0-9]/g, '');
-                numValor = strLimpio ? Number(strLimpio) : 0;
-            }
-            const valorFormateado = numValor.toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
+            let imgUrl = item.im && item.im.includes('id=') ? 'https://lh3.googleusercontent.com/d/' + item.im.split('id=')[1].split('&')[0] : 'https://placehold.co/60x60/e0e0e0/888?text=IMG';
+            let valorFormateado = Number(item.va || 0).toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
 
             contenedor.innerHTML += `
                 <div class="card" onclick="verDetalle(${index}, 'entrar')">
                     <div class="card-header">
-                        <span class="card-movil">${item.movil || '-'}</span>
-                        <span class="card-fecha">${fLista}</span>
+                        <span class="card-movil">${item.mo || '-'}</span>
+                        <span class="card-fecha">${item.fL || '-'}</span>
                     </div>
                     <div class="card-body">
                         <span class="card-price">${valorFormateado}</span>
-                        <span class="card-sede">${item.sede || '-'}</span>
+                        <span class="card-sede">${item.se || '-'}</span>
                     </div>
                     <div class="card-footer">
-                        <span class="card-address">📍 ${item.direccion || 'Sin dirección'}</span>
+                        <span class="card-address">📍 ${item.di || 'Sin dirección'}</span>
                         <img src="${imgUrl}" class="card-thumb" onerror="this.onerror=null; this.src='https://placehold.co/60x60/e0e0e0/888?text=IMG';">
                     </div>
                 </div>
@@ -421,77 +417,25 @@
         const contenido = document.getElementById('contenidoDetalle');
         
         document.getElementById('bottomBar').style.display = 'none';
-
-        vista.classList.remove('anim-derecha', 'anim-izquierda');
-        contenido.classList.remove('anim-swipe');
-        void vista.offsetWidth; 
-        void contenido.offsetWidth; 
+        vista.style.display = 'block';
         
-        // SISTEMA ANTIFALLO: Si por caché no lee fechaDetalle, usa fechaLista de respaldo
-        let fFull = item.fechaDetalle || item.fechaLista || item.fecha || "---";
-        
-        document.getElementById('tituloDetalle').innerText = item.movil || 'Detalle';
-        
-        // Escudo de conversión interno para el valor
-        let numValorDetalle = 0;
-        if(item.valor) {
-            let strLimpioDetalle = item.valor.toString().replace(/[^0-9]/g, '');
-            numValorDetalle = strLimpioDetalle ? Number(strLimpioDetalle) : 0;
-        }
-        const valorCop = numValorDetalle.toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
-        
-        let imgUrl = '';
-        if(item.foto && item.foto.includes('id=')) {
-            const id = item.foto.split('id=')[1].split('&')[0];
-            imgUrl = 'https://lh3.googleusercontent.com/d/' + id; 
-        }
+        let valorCop = Number(item.va || 0).toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
+        let imgUrl = item.im || ''; 
 
         contenido.innerHTML = `
             <div class="detalle-bloque">
-                <div class="detalle-fila">
-                    <span class="detalle-label">Fecha y Hora</span>
-                    <span class="detalle-valor">${fFull}</span>
-                </div>
-                <div class="detalle-fila">
-                    <span class="detalle-label">Farmanorte</span>
-                    <span class="detalle-valor">${item.sede || '-'}</span>
-                </div>
-                <div class="detalle-fila">
-                    <span class="detalle-label">Factura</span>
-                    <span class="detalle-valor">${item.factura || '-'}</span>
-                </div>
-                <div class="detalle-fila">
-                    <span class="detalle-label">Recogidas</span>
-                    <span class="detalle-valor">${item.recogidas || 'Ninguna'}</span>
-                </div>
-                <div class="detalle-fila">
-                    <span class="detalle-label">Dirección</span>
-                    <span class="detalle-valor">${item.direccion || '-'}</span>
-                </div>
-                <div class="detalle-fila">
-                    <span class="detalle-label">Valor Domicilio</span>
-                    <span class="detalle-valor destacado">${valorCop}</span>
-                </div>
+                <div class="detalle-fila"><span class="detalle-label">Fecha</span><span class="detalle-valor">${item.fD || '-'}</span></div>
+                <div class="detalle-fila"><span class="detalle-label">Sede</span><span class="detalle-valor">${item.se || '-'}</span></div>
+                <div class="detalle-fila"><span class="detalle-label">Factura</span><span class="detalle-valor">${item.fa || '-'}</span></div>
+                <div class="detalle-fila"><span class="detalle-label">Dirección</span><span class="detalle-valor">${item.di || '-'}</span></div>
+                <div class="detalle-fila"><span class="detalle-label">Valor</span><span class="detalle-valor destacado">${valorCop}</span></div>
             </div>
             <div class="detalle-foto-caja">
-                <span class="detalle-label" style="display:block;">Soporte Fotográfico</span>
-                <img src="${imgUrl}" class="detalle-foto" onclick="abrirZoom('${imgUrl}')" onerror="this.onerror=null; this.style.display='none';">
+                <img src="${imgUrl}" class="detalle-foto" onclick="abrirZoom('${imgUrl}')" onerror="this.style.display='none'">
             </div>
         `;
 
-        document.getElementById('btnPrev').disabled = (index === 0);
-        document.getElementById('btnNext').disabled = (index === reportesGlobales.length - 1);
-
-        document.getElementById('vistaLista').style.display = 'none';
-        document.getElementById('vistaFormulario').style.display = 'none';
-        vista.style.display = 'block';
-
-        if(tipoAnimacion === 'entrar') {
-            vista.classList.add('anim-derecha');
-            window.scrollTo(0, 0); 
-        } else {
-            contenido.classList.add('anim-swipe');
-        }
+        if(tipoAnimacion === 'entrar') vista.classList.add('anim-derecha');
     }
     
     function anteriorReporte() { verDetalle(indiceActual - 1, 'swipe'); }
