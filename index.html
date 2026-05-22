@@ -312,7 +312,7 @@
 
 <script>
     // ======= ¡PEGUE AQUÍ LA URL DE SU GOOGLE APPS SCRIPT! =======
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxFJr6Rm8QkBgDI5FxtykkjFRXZuu7ko_1fD5CP98-bjGc6Zk73F1baNrdT5Xj1d4tD/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzwXKKuhYT7gpaDLrOqwcfhLFEuTAZ8fUTeZ4TF9bVKNXsNiNPSMfwd-Sqfo6AMmYIZzQ/exec";
 
     let reportesGlobales = []; 
     let indiceActual = -1;     
@@ -326,39 +326,29 @@
 
     function descargarDatos(forzar = false) {
         const contenedor = document.getElementById('contenedorLista');
-        if (!forzar) contenedor.innerHTML = '<div class="loading-list">Sincronizando...</div>';
-
-        const cacheKey = 'servimoto_data_' + pestanaActiva;
         
-        // Si no forzamos, intentamos cargar local
-        if (!forzar) {
-            const cache = localStorage.getItem(cacheKey);
-            if (cache) {
-                try {
-                    reportesGlobales = JSON.parse(cache);
-                    renderizarLista();
-                    return;
-                } catch(e) { localStorage.removeItem(cacheKey); }
-            }
-        }
+        // Limpiamos la vista antes de pedir datos nuevos
+        contenedor.innerHTML = '<div class="loading-list">Sincronizando...</div>';
 
-        // Llamada al servidor
-        fetch(WEB_APP_URL + "?filtro=" + pestanaActiva)
+        // Construimos la URL con el parámetro de filtro activo
+        const urlFinal = WEB_APP_URL + "?filtro=" + pestanaActiva + "&v=" + new Date().getTime();
+        
+        fetch(urlFinal)
             .then(res => res.json())
             .then(data => {
                 reportesGlobales = data;
-                localStorage.setItem(cacheKey, JSON.stringify(data));
                 renderizarLista();
             })
             .catch(err => {
-                contenedor.innerHTML = '<div class="loading-list">Error de conexión. Intente de nuevo.</div>';
+                contenedor.innerHTML = '<div class="loading-list">Error de conexión.</div>';
             });
     }
 
     function cambiarPestana(pestana) {
-        if (pestanaActiva === pestana) return; // Si ya está en esa pestaña, ignora el toque
+        if (pestanaActiva === pestana) return; 
 
         pestanaActiva = pestana;
+        console.log("Cambiando a pestaña: " + pestana); // Esto le dirá en la consola si el click funciona
         
         document.getElementById('btnTabRecientes').classList.remove('active');
         document.getElementById('btnTabHistorial').classList.remove('active');
@@ -371,8 +361,7 @@
             document.getElementById('tituloVista').innerHTML = 'Servimoto<span class="dot">•</span><span>HISTORIAL</span>';
         }
         
-        // En lugar de procesar lo viejo, obligamos a la app a descargar los datos reales de esta pestaña
-        descargarDatos();
+        descargarDatos(); // Esto llama al fetch con el nuevo filtro
     }
 
     function renderizarLista() {
