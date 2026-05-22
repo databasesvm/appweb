@@ -312,7 +312,7 @@
 
 <script>
     // ======= ¡PEGUE AQUÍ LA URL DE SU GOOGLE APPS SCRIPT! =======
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby9szMIipKRJ68Mm_YiYfgSPiraKtoG_dKl4qBrspr2B2P5AJr2NA0k2-TuoLag1-uWXg/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz5JcQEeG-VXcpkERn0JNjmTFF8pXAVdj_dPNJVRQa6m0H_wdBlqfbVgf9JtlCup9Uyrg/exec";
 
     let reportesGlobales = []; 
     let indiceActual = -1;     
@@ -375,35 +375,17 @@
         const contenedor = document.getElementById('contenedorLista');
         contenedor.innerHTML = '';
         
+        // Ataja de una vez si la central mandó la lista vacía
         if(reportesGlobales.length === 0) {
-            contenedor.innerHTML = '<div class="loading-list">Base de datos vacía.</div>';
+            const mensaje = (pestanaActiva === 'recientes') ? 'No hay ningún reporte el día de hoy.' : 'No hay historial de ayer ni antier.';
+            contenedor.innerHTML = `<div class="loading-list">${mensaje}</div>`;
             return;
         }
 
-        const hoy = new Date();
-        let reportesMostrados = 0;
-        
         reportesGlobales.forEach((item, index) => {
-            let fechaLista = "---";
-            let esHoy = false;
+            // Recibe la hora exacta desde la central, sin que el navegador la altere
+            let fechaLista = item.fecha || "---";
 
-            if(item.fecha) {
-                const d = new Date(item.fecha);
-                fechaLista = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-                
-                // Lógica para saber si el reporte fue hecho hoy
-                if (d.getDate() === hoy.getDate() && d.getMonth() === hoy.getMonth() && d.getFullYear() === hoy.getFullYear()) {
-                    esHoy = true;
-                }
-            }
-
-            // Filtro: Si estamos en "recientes" y NO es de hoy, lo saltamos
-            if (pestanaActiva === 'recientes' && !esHoy) {
-                return; 
-            }
-            
-            reportesMostrados++;
-            
             let imgUrl = 'https://placehold.co/60x60/e0e0e0/888?text=NO+IMG';
             if(item.foto && item.foto.includes('id=')) {
                 const id = item.foto.split('id=')[1].split('&')[0];
@@ -429,9 +411,80 @@
                 </div>
             `;
         });
+    }
 
-        if(reportesMostrados === 0) {
-            contenedor.innerHTML = '<div class="loading-list">No hay reportes para mostrar en esta vista.</div>';
+    function verDetalle(index, tipoAnimacion = 'swipe') {
+        if (index < 0 || index >= reportesGlobales.length) return;
+        
+        indiceActual = index;
+        const item = reportesGlobales[index];
+        const vista = document.getElementById('vistaDetalle');
+        const contenido = document.getElementById('contenidoDetalle');
+        
+        document.getElementById('bottomBar').style.display = 'none';
+
+        vista.classList.remove('anim-derecha', 'anim-izquierda');
+        contenido.classList.remove('anim-swipe');
+        void vista.offsetWidth; 
+        void contenido.offsetWidth; 
+        
+        // Fecha directa de la central
+        let fechaFull = item.fecha || "---";
+        
+        document.getElementById('tituloDetalle').innerText = item.movil || 'Detalle';
+        const valorCop = Number(item.valor).toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
+        
+        let imgUrl = '';
+        if(item.foto && item.foto.includes('id=')) {
+            const id = item.foto.split('id=')[1].split('&')[0];
+            imgUrl = 'https://lh3.googleusercontent.com/d/' + id; 
+        }
+
+        contenido.innerHTML = `
+            <div class="detalle-bloque">
+                <div class="detalle-fila">
+                    <span class="detalle-label">Fecha y Hora</span>
+                    <span class="detalle-valor">${fechaFull}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Farmanorte</span>
+                    <span class="detalle-valor">${item.sede || '-'}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Factura</span>
+                    <span class="detalle-valor">${item.factura || '-'}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Recogidas</span>
+                    <span class="detalle-valor">${item.recogidas || 'Ninguna'}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Dirección</span>
+                    <span class="detalle-valor">${item.direccion || '-'}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Valor Domicilio</span>
+                    <span class="detalle-valor destacado">${valorCop}</span>
+                </div>
+            </div>
+            <div class="detalle-foto-caja">
+                <span class="detalle-label" style="display:block;">Soporte Fotográfico</span>
+                <img src="${imgUrl}" class="detalle-foto" onclick="abrirZoom('${imgUrl}')" onerror="this.onerror=null; this.style.display='none';">
+            </div>
+        `;
+
+        document.getElementById('btnPrev').disabled = (index === 0);
+        document.getElementById('btnNext').disabled = (index === reportesGlobales.length - 1);
+
+        document.getElementById('vistaLista').style.display = 'none';
+        document.getElementById('vistaFormulario').style.display = 'none';
+        vista.style.display = 'block';
+
+        if(tipoAnimacion === 'entrar') {
+            vista.classList.add('anim-derecha');
+            window.scrollTo(0, 0); 
+        } else {
+            contenido.classList.add('anim-swipe');
         }
     }
 
