@@ -312,7 +312,7 @@
 
 <script>
     // ======= ¡PEGUE AQUÍ LA URL DE SU GOOGLE APPS SCRIPT! =======
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz5JcQEeG-VXcpkERn0JNjmTFF8pXAVdj_dPNJVRQa6m0H_wdBlqfbVgf9JtlCup9Uyrg/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx1ougXbUg1PCs-V5feaRn_9RN8z04Dt1bDIjXS7O62lmPHkcGLzWXvu9Yas245QOn8ig/exec";
 
     let reportesGlobales = []; 
     let indiceActual = -1;     
@@ -383,8 +383,8 @@
         }
 
         reportesGlobales.forEach((item, index) => {
-            // Recibe la hora exacta desde la central, sin que el navegador la altere
-            let fechaLista = item.fecha || "---";
+            // El texto llega listo, sin hacer cálculos raros
+            let fLista = item.fechaLista || "---";
 
             let imgUrl = 'https://placehold.co/60x60/e0e0e0/888?text=NO+IMG';
             if(item.foto && item.foto.includes('id=')) {
@@ -398,7 +398,7 @@
                 <div class="card" onclick="verDetalle(${index}, 'entrar')">
                     <div class="card-header">
                         <span class="card-movil">${item.movil || '-'}</span>
-                        <span class="card-fecha">${fechaLista}</span>
+                        <span class="card-fecha">${fLista}</span>
                     </div>
                     <div class="card-body">
                         <span class="card-price">${valorFormateado}</span>
@@ -428,8 +428,8 @@
         void vista.offsetWidth; 
         void contenido.offsetWidth; 
         
-        // Fecha directa de la central
-        let fechaFull = item.fecha || "---";
+        // El texto detallado llega listo, adiós al error NaN
+        let fFull = item.fechaDetalle || "---";
         
         document.getElementById('tituloDetalle').innerText = item.movil || 'Detalle';
         const valorCop = Number(item.valor).toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
@@ -444,7 +444,7 @@
             <div class="detalle-bloque">
                 <div class="detalle-fila">
                     <span class="detalle-label">Fecha y Hora</span>
-                    <span class="detalle-valor">${fechaFull}</span>
+                    <span class="detalle-valor">${fFull}</span>
                 </div>
                 <div class="detalle-fila">
                     <span class="detalle-label">Farmanorte</span>
