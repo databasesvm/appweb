@@ -312,7 +312,7 @@
 
 <script>
     // ======= ¡PEGUE AQUÍ LA URL DE SU GOOGLE APPS SCRIPT! =======
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzwXKKuhYT7gpaDLrOqwcfhLFEuTAZ8fUTeZ4TF9bVKNXsNiNPSMfwd-Sqfo6AMmYIZzQ/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwY9wuVNE0NWVzH5Q4-EOJWkO9yb3KI7bjUfpp3_aPyKWGYLgovsd0rDBv6syyzCPpjBQ/exec";
 
     let reportesGlobales = []; 
     let indiceActual = -1;     
@@ -324,31 +324,37 @@
         configurarSwipe(); 
     };
 
-    function descargarDatos(forzar = false) {
+    function descargarDatos() {
         const contenedor = document.getElementById('contenedorLista');
+        const btnSync = document.getElementById('btnSync');
         
-        // Limpiamos la vista antes de pedir datos nuevos
-        contenedor.innerHTML = '<div class="loading-list">Sincronizando...</div>';
+        // Animación visual del botón
+        if(btnSync) {
+            btnSync.classList.add('girando');
+            setTimeout(() => btnSync.classList.remove('girando'), 400);
+        }
 
-        // Construimos la URL con el parámetro de filtro activo
-        const urlFinal = WEB_APP_URL + "?filtro=" + pestanaActiva + "&v=" + new Date().getTime();
+        contenedor.innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; padding-top: 50px;"><div class="spinner"></div><div style="color: #888; font-size: 14px; font-weight: 500;">Sincronizando con Servimoto...</div></div>';
         
-        fetch(urlFinal)
+        // Aquí está la magia: le decimos al servidor exactamente qué pestaña queremos
+        const urlConFiltro = WEB_APP_URL + "?filtro=" + pestanaActiva;
+        
+        fetch(urlConFiltro)
             .then(res => res.json())
             .then(data => {
-                reportesGlobales = data;
+                reportesGlobales = data; 
                 renderizarLista();
             })
             .catch(err => {
-                contenedor.innerHTML = '<div class="loading-list">Error de conexión.</div>';
+                contenedor.innerHTML = '<div class="loading-list" style="color:red;">Error de conexión. Revise la señal.</div>';
+                console.error(err);
             });
     }
 
     function cambiarPestana(pestana) {
-        if (pestanaActiva === pestana) return; 
+        if (pestanaActiva === pestana) return; // Si ya está en esa pestaña, ignora el toque
 
         pestanaActiva = pestana;
-        console.log("Cambiando a pestaña: " + pestana); // Esto le dirá en la consola si el click funciona
         
         document.getElementById('btnTabRecientes').classList.remove('active');
         document.getElementById('btnTabHistorial').classList.remove('active');
@@ -361,7 +367,8 @@
             document.getElementById('tituloVista').innerHTML = 'Servimoto<span class="dot">•</span><span>HISTORIAL</span>';
         }
         
-        descargarDatos(); // Esto llama al fetch con el nuevo filtro
+        // En lugar de procesar lo viejo, obligamos a la app a descargar los datos reales de esta pestaña
+        descargarDatos();
     }
 
     function renderizarLista() {
@@ -369,27 +376,40 @@
         contenedor.innerHTML = '';
         
         if(reportesGlobales.length === 0) {
-            const mensaje = (pestanaActiva === 'recientes') ? 'No hay reportes hoy.' : 'No hay historial reciente.';
+            const mensaje = (pestanaActiva === 'recientes') ? 'No hay ningún reporte el día de hoy.' : 'No hay historial de ayer ni antier.';
             contenedor.innerHTML = `<div class="loading-list">${mensaje}</div>`;
             return;
         }
 
         reportesGlobales.forEach((item, index) => {
-            let imgUrl = item.im && item.im.includes('id=') ? 'https://lh3.googleusercontent.com/d/' + item.im.split('id=')[1].split('&')[0] : 'https://placehold.co/60x60/e0e0e0/888?text=IMG';
-            let valorFormateado = Number(item.va || 0).toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
+            let fLista = item.fechaLista || item.fecha || "---";
+
+            let imgUrl = 'https://placehold.co/60x60/e0e0e0/888?text=NO+IMG';
+            if(item.foto && item.foto.includes('id=')) {
+                const id = item.foto.split('id=')[1].split('&')[0];
+                imgUrl = 'https://lh3.googleusercontent.com/d/' + id;
+            }
+
+            // Escudo de conversión para el valor
+            let numValor = 0;
+            if(item.valor) {
+                let strLimpio = item.valor.toString().replace(/[^0-9]/g, '');
+                numValor = strLimpio ? Number(strLimpio) : 0;
+            }
+            const valorFormateado = numValor.toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
 
             contenedor.innerHTML += `
                 <div class="card" onclick="verDetalle(${index}, 'entrar')">
                     <div class="card-header">
-                        <span class="card-movil">${item.mo || '-'}</span>
-                        <span class="card-fecha">${item.fL || '-'}</span>
+                        <span class="card-movil">${item.movil || '-'}</span>
+                        <span class="card-fecha">${fLista}</span>
                     </div>
                     <div class="card-body">
                         <span class="card-price">${valorFormateado}</span>
-                        <span class="card-sede">${item.se || '-'}</span>
+                        <span class="card-sede">${item.sede || '-'}</span>
                     </div>
                     <div class="card-footer">
-                        <span class="card-address">📍 ${item.di || 'Sin dirección'}</span>
+                        <span class="card-address">📍 ${item.direccion || 'Sin dirección'}</span>
                         <img src="${imgUrl}" class="card-thumb" onerror="this.onerror=null; this.src='https://placehold.co/60x60/e0e0e0/888?text=IMG';">
                     </div>
                 </div>
@@ -406,25 +426,77 @@
         const contenido = document.getElementById('contenidoDetalle');
         
         document.getElementById('bottomBar').style.display = 'none';
-        vista.style.display = 'block';
+
+        vista.classList.remove('anim-derecha', 'anim-izquierda');
+        contenido.classList.remove('anim-swipe');
+        void vista.offsetWidth; 
+        void contenido.offsetWidth; 
         
-        let valorCop = Number(item.va || 0).toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
-        let imgUrl = item.im || ''; 
+        // SISTEMA ANTIFALLO: Si por caché no lee fechaDetalle, usa fechaLista de respaldo
+        let fFull = item.fechaDetalle || item.fechaLista || item.fecha || "---";
+        
+        document.getElementById('tituloDetalle').innerText = item.movil || 'Detalle';
+        
+        // Escudo de conversión interno para el valor
+        let numValorDetalle = 0;
+        if(item.valor) {
+            let strLimpioDetalle = item.valor.toString().replace(/[^0-9]/g, '');
+            numValorDetalle = strLimpioDetalle ? Number(strLimpioDetalle) : 0;
+        }
+        const valorCop = numValorDetalle.toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
+        
+        let imgUrl = '';
+        if(item.foto && item.foto.includes('id=')) {
+            const id = item.foto.split('id=')[1].split('&')[0];
+            imgUrl = 'https://lh3.googleusercontent.com/d/' + id; 
+        }
 
         contenido.innerHTML = `
             <div class="detalle-bloque">
-                <div class="detalle-fila"><span class="detalle-label">Fecha</span><span class="detalle-valor">${item.fD || '-'}</span></div>
-                <div class="detalle-fila"><span class="detalle-label">Sede</span><span class="detalle-valor">${item.se || '-'}</span></div>
-                <div class="detalle-fila"><span class="detalle-label">Factura</span><span class="detalle-valor">${item.fa || '-'}</span></div>
-                <div class="detalle-fila"><span class="detalle-label">Dirección</span><span class="detalle-valor">${item.di || '-'}</span></div>
-                <div class="detalle-fila"><span class="detalle-label">Valor</span><span class="detalle-valor destacado">${valorCop}</span></div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Fecha y Hora</span>
+                    <span class="detalle-valor">${fFull}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Farmanorte</span>
+                    <span class="detalle-valor">${item.sede || '-'}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Factura</span>
+                    <span class="detalle-valor">${item.factura || '-'}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Recogidas</span>
+                    <span class="detalle-valor">${item.recogidas || 'Ninguna'}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Dirección</span>
+                    <span class="detalle-valor">${item.direccion || '-'}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Valor Domicilio</span>
+                    <span class="detalle-valor destacado">${valorCop}</span>
+                </div>
             </div>
             <div class="detalle-foto-caja">
-                <img src="${imgUrl}" class="detalle-foto" onclick="abrirZoom('${imgUrl}')" onerror="this.style.display='none'">
+                <span class="detalle-label" style="display:block;">Soporte Fotográfico</span>
+                <img src="${imgUrl}" class="detalle-foto" onclick="abrirZoom('${imgUrl}')" onerror="this.onerror=null; this.style.display='none';">
             </div>
         `;
 
-        if(tipoAnimacion === 'entrar') vista.classList.add('anim-derecha');
+        document.getElementById('btnPrev').disabled = (index === 0);
+        document.getElementById('btnNext').disabled = (index === reportesGlobales.length - 1);
+
+        document.getElementById('vistaLista').style.display = 'none';
+        document.getElementById('vistaFormulario').style.display = 'none';
+        vista.style.display = 'block';
+
+        if(tipoAnimacion === 'entrar') {
+            vista.classList.add('anim-derecha');
+            window.scrollTo(0, 0); 
+        } else {
+            contenido.classList.add('anim-swipe');
+        }
     }
     
     function anteriorReporte() { verDetalle(indiceActual - 1, 'swipe'); }
