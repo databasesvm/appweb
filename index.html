@@ -312,7 +312,7 @@
 
 <script>
     // ======= ¡PEGUE AQUÍ LA URL DE SU GOOGLE APPS SCRIPT! =======
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz_Al_39KPw4URsuH_uaV90-oL3QjkXMIMOAot62vU3_ZlfGGOidwdGj-0LQuZCE0wkjA/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxFJr6Rm8QkBgDI5FxtykkjFRXZuu7ko_1fD5CP98-bjGc6Zk73F1baNrdT5Xj1d4tD/exec";
 
     let reportesGlobales = []; 
     let indiceActual = -1;     
@@ -324,32 +324,27 @@
         configurarSwipe(); 
     };
 
-    function descargarDatos() {
-        const contenedor = document.getElementById('contenedorLista');
-        const btnSync = document.getElementById('btnSync');
-        
-        // Animación visual del botón
-        if(btnSync) {
-            btnSync.classList.add('girando');
-            setTimeout(() => btnSync.classList.remove('girando'), 400);
+    function descargarDatos(forzar = false) {
+        // Si hay datos y no forzamos sincronización, no descargue nada
+        const cache = localStorage.getItem('servimoto_data_' + pestanaActiva);
+        if (cache && !forzar) {
+            reportesGlobales = JSON.parse(cache);
+            renderizarLista();
+            return;
         }
 
-        contenedor.innerHTML = '<div style="display: flex; flex-direction: column; align-items: center; padding-top: 50px;"><div class="spinner"></div><div style="color: #888; font-size: 14px; font-weight: 500;">Sincronizando con Servimoto...</div></div>';
-        
-        // Aquí está la magia: le decimos al servidor exactamente qué pestaña queremos
-        const urlConFiltro = WEB_APP_URL + "?filtro=" + pestanaActiva;
-        
-        fetch(urlConFiltro)
+        // Si no hay cache, haga el fetch normal y guarde el resultado
+        fetch(WEB_APP_URL + "?filtro=" + pestanaActiva)
             .then(res => res.json())
             .then(data => {
-                reportesGlobales = data; 
+                reportesGlobales = data;
+                localStorage.setItem('servimoto_data_' + pestanaActiva, JSON.stringify(data));
                 renderizarLista();
-            })
-            .catch(err => {
-                contenedor.innerHTML = '<div class="loading-list" style="color:red;">Error de conexión. Revise la señal.</div>';
-                console.error(err);
             });
     }
+
+    // Cambie el onclick del botón sync en el HTML para que fuerce:
+    // onclick="descargarDatos(true)"
 
     function cambiarPestana(pestana) {
         if (pestanaActiva === pestana) return; // Si ya está en esa pestaña, ignora el toque
