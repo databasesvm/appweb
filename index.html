@@ -312,7 +312,7 @@
 
 <script>
     // ======= ¡PEGUE AQUÍ LA URL DE SU GOOGLE APPS SCRIPT! =======
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwIuGJ4oPazfvIkx1isXDMFlOEKuwq7_eJgD36SLkgEsCuFNn0PSRZTGACxBLAZQx6edw/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz_Al_39KPw4URsuH_uaV90-oL3QjkXMIMOAot62vU3_ZlfGGOidwdGj-0LQuZCE0wkjA/exec";
 
     let reportesGlobales = []; 
     let indiceActual = -1;     
@@ -375,7 +375,6 @@
         const contenedor = document.getElementById('contenedorLista');
         contenedor.innerHTML = '';
         
-        // Ataja de una vez si la central mandó la lista vacía
         if(reportesGlobales.length === 0) {
             const mensaje = (pestanaActiva === 'recientes') ? 'No hay ningún reporte el día de hoy.' : 'No hay historial de ayer ni antier.';
             contenedor.innerHTML = `<div class="loading-list">${mensaje}</div>`;
@@ -383,8 +382,7 @@
         }
 
         reportesGlobales.forEach((item, index) => {
-            // El texto llega listo, sin hacer cálculos raros
-            let fLista = item.fechaLista || "---";
+            let fLista = item.fechaLista || item.fecha || "---";
 
             let imgUrl = 'https://placehold.co/60x60/e0e0e0/888?text=NO+IMG';
             if(item.foto && item.foto.includes('id=')) {
@@ -392,7 +390,13 @@
                 imgUrl = 'https://lh3.googleusercontent.com/d/' + id;
             }
 
-            const valorFormateado = Number(item.valor).toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
+            // Escudo de conversión para el valor
+            let numValor = 0;
+            if(item.valor) {
+                let strLimpio = item.valor.toString().replace(/[^0-9]/g, '');
+                numValor = strLimpio ? Number(strLimpio) : 0;
+            }
+            const valorFormateado = numValor.toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
 
             contenedor.innerHTML += `
                 <div class="card" onclick="verDetalle(${index}, 'entrar')">
@@ -428,11 +432,18 @@
         void vista.offsetWidth; 
         void contenido.offsetWidth; 
         
-        // El texto detallado llega listo, adiós al error NaN
-        let fFull = item.fechaDetalle || "---";
+        // SISTEMA ANTIFALLO: Si por caché no lee fechaDetalle, usa fechaLista de respaldo
+        let fFull = item.fechaDetalle || item.fechaLista || item.fecha || "---";
         
         document.getElementById('tituloDetalle').innerText = item.movil || 'Detalle';
-        const valorCop = Number(item.valor).toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
+        
+        // Escudo de conversión interno para el valor
+        let numValorDetalle = 0;
+        if(item.valor) {
+            let strLimpioDetalle = item.valor.toString().replace(/[^0-9]/g, '');
+            numValorDetalle = strLimpioDetalle ? Number(strLimpioDetalle) : 0;
+        }
+        const valorCop = numValorDetalle.toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
         
         let imgUrl = '';
         if(item.foto && item.foto.includes('id=')) {
@@ -445,84 +456,6 @@
                 <div class="detalle-fila">
                     <span class="detalle-label">Fecha y Hora</span>
                     <span class="detalle-valor">${fFull}</span>
-                </div>
-                <div class="detalle-fila">
-                    <span class="detalle-label">Farmanorte</span>
-                    <span class="detalle-valor">${item.sede || '-'}</span>
-                </div>
-                <div class="detalle-fila">
-                    <span class="detalle-label">Factura</span>
-                    <span class="detalle-valor">${item.factura || '-'}</span>
-                </div>
-                <div class="detalle-fila">
-                    <span class="detalle-label">Recogidas</span>
-                    <span class="detalle-valor">${item.recogidas || 'Ninguna'}</span>
-                </div>
-                <div class="detalle-fila">
-                    <span class="detalle-label">Dirección</span>
-                    <span class="detalle-valor">${item.direccion || '-'}</span>
-                </div>
-                <div class="detalle-fila">
-                    <span class="detalle-label">Valor Domicilio</span>
-                    <span class="detalle-valor destacado">${valorCop}</span>
-                </div>
-            </div>
-            <div class="detalle-foto-caja">
-                <span class="detalle-label" style="display:block;">Soporte Fotográfico</span>
-                <img src="${imgUrl}" class="detalle-foto" onclick="abrirZoom('${imgUrl}')" onerror="this.onerror=null; this.style.display='none';">
-            </div>
-        `;
-
-        document.getElementById('btnPrev').disabled = (index === 0);
-        document.getElementById('btnNext').disabled = (index === reportesGlobales.length - 1);
-
-        document.getElementById('vistaLista').style.display = 'none';
-        document.getElementById('vistaFormulario').style.display = 'none';
-        vista.style.display = 'block';
-
-        if(tipoAnimacion === 'entrar') {
-            vista.classList.add('anim-derecha');
-            window.scrollTo(0, 0); 
-        } else {
-            contenido.classList.add('anim-swipe');
-        }
-    }
-
-    function verDetalle(index, tipoAnimacion = 'swipe') {
-        if (index < 0 || index >= reportesGlobales.length) return;
-        
-        indiceActual = index;
-        const item = reportesGlobales[index];
-        const vista = document.getElementById('vistaDetalle');
-        const contenido = document.getElementById('contenidoDetalle');
-        
-        document.getElementById('bottomBar').style.display = 'none';
-
-        vista.classList.remove('anim-derecha', 'anim-izquierda');
-        contenido.classList.remove('anim-swipe');
-        void vista.offsetWidth; 
-        void contenido.offsetWidth; 
-        
-        let fechaFull = "---";
-        if(item.fecha) {
-            const d = new Date(item.fecha);
-            fechaFull = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} - ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-        }
-        
-        document.getElementById('tituloDetalle').innerText = item.movil || 'Detalle';
-        const valorCop = Number(item.valor).toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
-        
-        let imgUrl = '';
-        if(item.foto && item.foto.includes('id=')) {
-            const id = item.foto.split('id=')[1].split('&')[0];
-            imgUrl = 'https://lh3.googleusercontent.com/d/' + id; 
-        }
-
-        contenido.innerHTML = `
-            <div class="detalle-bloque">
-                <div class="detalle-fila">
-                    <span class="detalle-label">Fecha y Hora</span>
-                    <span class="detalle-valor">${fechaFull}</span>
                 </div>
                 <div class="detalle-fila">
                     <span class="detalle-label">Farmanorte</span>
