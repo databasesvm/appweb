@@ -29,7 +29,26 @@
 
         /* HEADER DETALLE / FORMULARIO */
         .header-detalle { background-color: var(--verde); color: var(--blanco); }
-        .header-detalle .btn-volver-flecha { background: none; border: none; color: var(--blanco); font-size: 28px; padding: 0; display: flex; align-items: center; }
+        
+        /* BOTÓN TÁCTICO DE RETROCESO */
+        .header-detalle .btn-volver-flecha { 
+            background: rgba(255, 255, 255, 0.2); 
+            border: none; 
+            color: var(--blanco); 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .header-detalle .btn-volver-flecha:active { 
+            background: rgba(255, 255, 255, 0.35); 
+            transform: scale(0.92); 
+        }
         .header-detalle #tituloDetalle { font-size: 16px; font-weight: 600; }
 
         /* CONTENEDOR DE LISTA (CARDS) */
@@ -142,9 +161,14 @@
 
     <div id="vistaDetalle">
         <div class="header header-detalle">
-            <button onclick="cerrarDetalle()" class="btn-volver-flecha">←</button>
+            <button onclick="cerrarDetalle()" class="btn-volver-flecha">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
             <span id="tituloDetalle">Detalle</span>
-            <span style="width: 40px;"></span> 
+            <span style="width: 42px;"></span> 
         </div>
         
         <button id="btnPrev" class="nav-btn prev" onclick="anteriorReporte()">❮</button>
@@ -157,9 +181,14 @@
 
     <div id="vistaFormulario">
         <div class="header header-detalle">
-            <button class="btn-volver-flecha" onclick="mostrarLista()">←</button>
+            <button class="btn-volver-flecha" onclick="mostrarLista()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
             <span style="font-weight: 600;">Nuevo Reporte</span>
-            <span style="width:40px"></span>
+            <span style="width: 42px;"></span>
         </div>
         <div class="form-body">
             <div class="form-card">
