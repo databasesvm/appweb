@@ -30,11 +30,11 @@
         /* HEADER DETALLE / FORMULARIO */
         .header-detalle { background-color: var(--verde); color: var(--blanco); }
         
-        /* BOTÓN TÁCTICO DE RETROCESO */
+        /* BOTÓN TÁCTICO DE RETROCESO (Adaptado al fondo blanco) */
         .header-detalle .btn-volver-flecha { 
-            background: rgba(255, 255, 255, 0.2); 
+            background: var(--gris-fondo); /* Fondo táctico oscuro translúcido */
             border: none; 
-            color: var(--blanco); 
+            color: #00a650; /* Icono de flecha negro */
             width: 42px; 
             height: 42px; 
             border-radius: 50%; 
@@ -43,13 +43,26 @@
             justify-content: center; 
             cursor: pointer; 
             transition: all 0.2s ease; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
         .header-detalle .btn-volver-flecha:active { 
-            background: rgba(255, 255, 255, 0.35); 
+            background: rgba(0, 0, 0, 0.2); 
             transform: scale(0.92); 
         }
-        .header-detalle #tituloDetalle { font-size: 16px; font-weight: 600; }
+
+        /* EL TAG DEL MÓVIL (Como en la lista) */
+        .header-detalle #tituloDetalle { 
+            display: inline-block; /* Para aceptar padding y border-radius */
+            background: var(--negro); /* Fondo negro */
+            color: var(--dorado); /* Texto dorado */
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase; /* Todo en mayúsculas */
+            letter-spacing: 0.5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
 
         /* CONTENEDOR DE LISTA (CARDS) */
         .list-container { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
