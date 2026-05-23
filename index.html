@@ -22,19 +22,46 @@
         .header-title { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
         .header-title span { color: var(--verde); }
         .header-title .dot { color: var(--dorado); font-size: 24px; line-height: 0; }
+        
         .header button.icon-btn { background: var(--gris-fondo); border: none; font-size: 20px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
         .header button.icon-btn:active { background: #e0e0e0; }
         .header button.icon-btn svg { transition: transform 0.4s ease; }
         .header button.icon-btn.girando svg { transform: rotate(360deg); }
 
-        /* HEADER DETALLE / FORMULARIO */
+        /* BUSCADOR UNIVERSAL TÁCTICO */
+        .search-container { 
+            background: var(--blanco); 
+            padding: 10px 20px; 
+            border-bottom: 1px solid var(--borde); 
+            display: none; 
+            animation: fadeInTab 0.2s ease forwards;
+        }
+        .search-input { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 1.5px solid var(--borde); 
+            border-radius: 10px; 
+            font-size: 15px; 
+            background-color: var(--gris-fondo); 
+            color: var(--negro); 
+            font-weight: 500;
+            outline: none; 
+            transition: all 0.2s ease;
+        }
+        .search-input:focus { 
+            border-color: var(--verde); 
+            background-color: var(--blanco);
+            box-shadow: 0 0 0 3px rgba(0, 166, 80, 0.1);
+        }
+
+        /* HEADER DETALLE / FORMULARIO (Fondo Verde) */
         .header-detalle { background-color: var(--verde); color: var(--blanco); }
         
-        /* BOTÓN TÁCTICO DE RETROCESO (Adaptado al fondo blanco) */
+        /* BOTÓN TÁCTICO DE RETROCESO */
         .header-detalle .btn-volver-flecha { 
-            background: var(--gris-fondo); /* Fondo táctico oscuro translúcido */
+            background: var(--gris-fondo); 
             border: none; 
-            color: #00a650; /* Icono de flecha negro */
+            color: var(--verde); 
             width: 42px; 
             height: 42px; 
             border-radius: 50%; 
@@ -50,16 +77,16 @@
             transform: scale(0.92); 
         }
 
-        /* EL TAG DEL MÓVIL (Como en la lista) */
+        /* EL TAG DEL MÓVIL (Fondo negro, letras doradas) */
         .header-detalle #tituloDetalle { 
-            display: inline-block; /* Para aceptar padding y border-radius */
-            background: var(--negro); /* Fondo negro */
-            color: var(--dorado); /* Texto dorado */
+            display: inline-block; 
+            background: var(--negro); 
+            color: var(--dorado); 
             font-size: 12px;
             font-weight: bold;
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 20px;
-            text-transform: uppercase; /* Todo en mayúsculas */
+            text-transform: uppercase; 
             letter-spacing: 0.5px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
@@ -146,13 +173,10 @@
         .anim-derecha { animation: slideInRight 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         .anim-izquierda { animation: slideInLeft 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
         .anim-swipe { animation: fadeSwipe 0.2s ease-in-out forwards; }
-
-        /* ANIMACIÓN DE TRANSICIÓN PARA PESTAÑAS */
         @keyframes fadeInTab { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .anim-pestana { animation: fadeInTab 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
     </style>
-    
     <script src="https://cdn.jsdelivr.net/npm/pinch-zoom-js@2.3.5/dist/pinch-zoom.min.js"></script>
 </head>
 <body>
@@ -160,13 +184,25 @@
     <div id="vistaLista">
         <div class="header">
             <div class="header-title" id="tituloVista">Servimoto<span class="dot">•</span><span>HOY</span></div>
-            <button class="icon-btn" id="btnSync" onclick="descargarDatos()">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--verde)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
-                    <path d="M21 3v5h-5"></path>
-                </svg>
-            </button>
+            <div style="display: flex; gap: 8px;">
+                <button class="icon-btn" onclick="toggleBuscador()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gris-oscuro)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+                <button class="icon-btn" id="btnSync" onclick="descargarDatos()">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--verde)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+                        <path d="M21 3v5h-5"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
+        <div class="search-container" id="cajaBuscador">
+            <input type="text" id="inputBuscador" class="search-input" placeholder="Buscar móvil, sede, factura..." onkeyup="filtrarEnVivo()">
+        </div>
+
         <div id="contenedorLista" class="list-container">
             <div class="loading-list">Sincronizando con la central...</div>
         </div>
@@ -353,12 +389,11 @@
     </div>
 
 <script>
-    // ======= ¡PEGUE AQUÍ LA URL DE SU GOOGLE APPS SCRIPT! =======
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx0X01UtWvlZnIZaMltkSoeOovj4m_Fi_HfLlM-K1oMEbZ9DIe-kInUZ73dxPQfNxe88w/exec";
 
     let reportesGlobales = []; 
-    let indiceActual = -1;     
-    let pestanaActiva = 'recientes'; // Por defecto muestra solo los de hoy
+    let indiceActual = -1;    
+    let pestanaActiva = 'recientes'; 
     let elPinch = null;
 
     window.onload = () => {
@@ -375,7 +410,6 @@
             setTimeout(() => btnSync.classList.remove('girando'), 400);
         }
 
-        // Táctica de distracción adaptada a la pestaña activa
         let textosCarga = [];
         if (pestanaActiva === 'recientes') {
             textosCarga = [
@@ -428,7 +462,7 @@
     }
 
     function cambiarPestana(pestana) {
-        if (pestanaActiva === pestana) return; // Si ya está en esa pestaña, ignora el toque
+        if (pestanaActiva === pestana) return; 
 
         pestanaActiva = pestana;
         
@@ -443,11 +477,33 @@
             document.getElementById('tituloVista').innerHTML = 'Servimoto<span class="dot">•</span><span>HISTORIAL</span>';
         }
         
-        // En lugar de procesar lo viejo, obligamos a la app a descargar los datos reales de esta pestaña
+        // Cierra el buscador si está abierto al cambiar de pestaña
+        document.getElementById('cajaBuscador').style.display = 'none';
+        document.getElementById('inputBuscador').value = '';
+        
         descargarDatos();
     }
 
-    function renderizarLista() {
+    // Funciones del Buscador Táctico
+    function toggleBuscador() {
+        const caja = document.getElementById('cajaBuscador');
+        const input = document.getElementById('inputBuscador');
+        if (caja.style.display === 'block') {
+            caja.style.display = 'none';
+            input.value = ''; 
+            renderizarLista(); 
+        } else {
+            caja.style.display = 'block';
+            input.focus(); 
+        }
+    }
+
+    function filtrarEnVivo() {
+        const texto = document.getElementById('inputBuscador').value.toLowerCase();
+        renderizarLista(texto); 
+    }
+
+    function renderizarLista(filtroBusqueda = '') {
         const contenedor = document.getElementById('contenedorLista');
         contenedor.innerHTML = '';
         
@@ -457,7 +513,20 @@
             return;
         }
 
-        reportesGlobales.forEach((item, index) => {
+        const reportesFiltrados = reportesGlobales.filter(item => {
+            if(!filtroBusqueda) return true;
+            const escaneoCompleto = `${item.movil} ${item.sede} ${item.factura} ${item.direccion} ${item.valor} ${item.fechaLista}`.toLowerCase();
+            return escaneoCompleto.includes(filtroBusqueda);
+        });
+
+        if(reportesFiltrados.length === 0) {
+            contenedor.innerHTML = `<div class="loading-list">No se encontraron resultados para "${filtroBusqueda}"</div>`;
+            return;
+        }
+
+        reportesFiltrados.forEach((item) => {
+            const indexOriginal = reportesGlobales.indexOf(item);
+            
             let fLista = item.fechaLista || item.fecha || "---";
 
             let imgUrl = 'https://placehold.co/60x60/e0e0e0/888?text=NO+IMG';
@@ -466,7 +535,6 @@
                 imgUrl = 'https://lh3.googleusercontent.com/d/' + id;
             }
 
-            // Escudo de conversión para el valor
             let numValor = 0;
             if(item.valor) {
                 let strLimpio = item.valor.toString().replace(/[^0-9]/g, '');
@@ -475,7 +543,7 @@
             const valorFormateado = numValor.toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
 
             contenedor.innerHTML += `
-                <div class="card" onclick="verDetalle(${index}, 'entrar')">
+                <div class="card" onclick="verDetalle(${indexOriginal}, 'entrar')">
                     <div class="card-header">
                         <span class="card-movil">${item.movil || '-'}</span>
                         <span class="card-fecha">${fLista}</span>
@@ -502,18 +570,17 @@
         const contenido = document.getElementById('contenidoDetalle');
         
         document.getElementById('bottomBar').style.display = 'none';
+        document.getElementById('cajaBuscador').style.display = 'none';
 
         vista.classList.remove('anim-derecha', 'anim-izquierda');
         contenido.classList.remove('anim-swipe');
         void vista.offsetWidth; 
         void contenido.offsetWidth; 
         
-        // SISTEMA ANTIFALLO: Si por caché no lee fechaDetalle, usa fechaLista de respaldo
         let fFull = item.fechaDetalle || item.fechaLista || item.fecha || "---";
         
         document.getElementById('tituloDetalle').innerText = item.movil || 'Detalle';
         
-        // Escudo de conversión interno para el valor
         let numValorDetalle = 0;
         if(item.valor) {
             let strLimpioDetalle = item.valor.toString().replace(/[^0-9]/g, '');
@@ -594,17 +661,12 @@
         }
     }
 
-    // REEMPLAZA ESTAS DOS FUNCIONES COMPLETAS EN TU <SCRIPT>
-function abrirZoom(url) {
+    function abrirZoom(url) {
         if(!url) return;
-        
-        // Bloqueamos scroll de fondo
         document.body.style.overflow = 'hidden'; 
-        
         document.getElementById('loadingOverlay').style.display = 'flex';
         document.getElementById('loadingText').innerText = "Abriendo original...";
 
-        // Reinicio táctico: Inyectamos la imagen desde cero para evitar bugs
         const wrapper = document.getElementById('zoomWrapper');
         wrapper.innerHTML = `<img id="fotoAmpliada" src="${url}">`;
         
@@ -617,7 +679,6 @@ function abrirZoom(url) {
 
             setTimeout(() => {
                 try {
-                    // Inicializamos el zoom sobre la imagen limpia
                     new PinchZoom(img, {
                         minZoom: 1, 
                         maxZoom: 6, 
@@ -638,11 +699,7 @@ function abrirZoom(url) {
     
     function cerrarZoom() {
         document.getElementById('modalZoom').style.display = 'none';
-        
-        // Borramos la foto del código para matar cualquier rastro del zoom anterior
         document.getElementById('zoomWrapper').innerHTML = ''; 
-        
-        // Reactivamos el scroll normal
         document.body.style.overflow = '';
     }
 
@@ -652,6 +709,11 @@ function abrirZoom(url) {
         vistaLista.style.display = 'block';
         document.getElementById('bottomBar').style.display = 'flex';
         
+        // Si había un buscador abierto, aseguramos que se mantenga visible la cabecera completa
+        if(document.getElementById('inputBuscador').value !== '') {
+            document.getElementById('cajaBuscador').style.display = 'block';
+        }
+
         vistaLista.classList.remove('anim-izquierda', 'anim-derecha');
         void vistaLista.offsetWidth; 
         vistaLista.classList.add('anim-izquierda'); 
@@ -734,7 +796,6 @@ function abrirZoom(url) {
                         document.getElementById('reporteForm').reset();
                         btn.disabled = false;
                         
-                        // Si estábamos en historial, mejor lo devolvemos a recientes para que vea su envío de hoy
                         cambiarPestana('recientes'); 
                         descargarDatos(); 
                     }, 1000);
