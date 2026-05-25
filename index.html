@@ -843,12 +843,16 @@
                         document.getElementById('btnTabHistorial').classList.remove('active');
                         document.getElementById('tituloVista').innerHTML = 'Servimoto<span class="dot">•</span><span>HOY</span>';
                         
-                        // Limpieza del buscador por si estaba activo
-                        document.getElementById('cajaBuscador').style.style.display = 'none';
-                        document.getElementById('inputBuscador').value = '';
+                        // Limpieza del buscador (Error de sintaxis corregido aquí)
+                        if(document.getElementById('cajaBuscador')) {
+                            document.getElementById('cajaBuscador').style.display = 'none';
+                        }
+                        if(document.getElementById('inputBuscador')) {
+                            document.getElementById('inputBuscador').value = '';
+                        }
                         
-                        mostrarLista();   // Apaga el formulario y enciende la vista de tarjetas
-                        descargarDatos(); // Sincroniza para mostrar el nuevo registro de primero
+                        mostrarLista();   // Regresa a la vista de tarjetas
+                        descargarDatos(); // Sincroniza la base de datos
                     }, 1200);
                 }).catch(err => {
                     overlay.style.display = 'none';
