@@ -151,8 +151,7 @@
         .form-card { background: var(--blanco); padding: 25px 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
         label { font-weight: 700; display: block; margin-top: 15px; font-size: 11px; color: var(--gris-oscuro); text-transform: uppercase; letter-spacing: 0.5px; }
         label:first-child { margin-top: 0; }
-        select, input { width: 100%; padding: 14px; margin-top: 8px; border: 1.5px solid var(--borde); border-radius: 10px; box-sizing: border-box; font-size: 16px; background-color: var(--gris-fondo); -webkit-appearance: none; font-weight: 500; color: var(--negro); transition: border-color 0.2s; }
-        select:focus, input:focus { border-color: var(--verde); outline: none; background-color: var(--blanco); box-shadow: 0 0 0 4px rgba(0, 166, 80, 0.1); }
+        select, input { width: 100%; padding: 14px; margin-top: 8px; border: 1.5px solid var(--borde); border-radius: 10px; box-sizing: border-box; font-size: 16px; background-color: var(--gris-fondo); -webkit-appearance: none; appearance: none; font-weight: 500; color: var(--negro); transition: border-color 0.2s; }        select:focus, input:focus { border-color: var(--verde); outline: none; background-color: var(--blanco); box-shadow: 0 0 0 4px rgba(0, 166, 80, 0.1); }
         .btn-enviar { background-color: var(--verde); color: var(--blanco); border: none; width: 100%; padding: 16px; margin-top: 30px; border-radius: 12px; font-size: 16px; font-weight: 800; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 166, 80, 0.3); transition: background 0.2s, transform 0.1s; }
         .btn-enviar:active { background-color: #008f45; transform: scale(0.98); }
         .btn-enviar:disabled { background-color: #cccccc; box-shadow: none; cursor: not-allowed; }
@@ -185,13 +184,12 @@
         .anim-pestana { animation: fadeInTab 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
     </style>
-    <script src="https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js"></script>
 </head>
 <body>
 
     <div id="vistaLista">
         <div class="header">
-            <div class="header-title" id="tituloVista">Servimoto<span class="dot">•</span><span>HOY</span></div>
+            <div class="header-title" id="tituloVista">Servimoto FN<span class="dot">•</span><span>HOY</span></div>
             <div style="display: flex; gap: 8px;">
                 <button class="icon-btn" onclick="toggleBuscador()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gris-oscuro)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -325,9 +323,11 @@
                         <option value="FN19">FN19 Av 0 Cll 9</option>
                         <option value="FN20">FN20 Centro</option>
                         <option value="FN24">FN24 Av 0 Cll 11</option>
+                        <option value="FN23">FN23</option>
                         <option value="FN25">FN25 Pinar del Rio</option>
                         <option value="FN27">FN27 Prados del Este</option>
                         <option value="FN30">FN30 Por la 10 Los Patios</option>
+                        <option value="FN31">FN31 </option>
                         <option value="FN32">FN32 Parque del Rosario</option>
                         <option value="FN33">FN33 La Playa</option>
                         <option value="FN34">FN34 Calle 13 Caobos</option>
@@ -360,7 +360,7 @@
                     <input type="text" id="factura" placeholder="Ej: 123456" required>
 
                     <label>VALOR DOMICILIO ($)</label>
-                    <input type="number" id="valor" placeholder="Valor a cobrar" required>
+                    <input type="number" id="valor" placeholder="Ej: 4000, 5000..." min="4000" step="1000" required>
 
                     <label>DIRECCIÓN EXACTA</label>
                     <input type="text" id="direccion" placeholder="Dirección de entrega" required>
@@ -403,6 +403,8 @@
         <div id="loadingText">Procesando...</div>
     </div>
 
+<script src="https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js"></script>
+
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx0X01UtWvlZnIZaMltkSoeOovj4m_Fi_HfLlM-K1oMEbZ9DIe-kInUZ73dxPQfNxe88w/exec";
 
@@ -411,10 +413,11 @@
     let pestanaActiva = 'recientes'; 
     let elPinch = null;
 
-    window.onload = () => {
+    // Ignición táctica: arranca apenas la pantalla carga, sin esperar librerías externas
+    document.addEventListener("DOMContentLoaded", () => {
         descargarDatos();
         configurarSwipe(); 
-    };
+    });
 
     function descargarDatos() {
         const contenedor = document.getElementById('contenedorLista');
@@ -466,6 +469,10 @@
             .then(res => res.json())
             .then(data => {
                 clearInterval(rotador); 
+                // Blindaje por si el servidor escupe un error en vez de una lista
+                if (!Array.isArray(data)) {
+                    data = [];
+                }
                 reportesGlobales = data; 
                 renderizarLista();
             })
@@ -486,10 +493,10 @@
         
         if (pestana === 'recientes') {
             document.getElementById('btnTabRecientes').classList.add('active');
-            document.getElementById('tituloVista').innerHTML = 'Servimoto<span class="dot">•</span><span>HOY</span>';
+            document.getElementById('tituloVista').innerHTML = 'Servimoto FN<span class="dot">•</span><span>HOY</span>';
         } else {
             document.getElementById('btnTabHistorial').classList.add('active');
-            document.getElementById('tituloVista').innerHTML = 'Servimoto<span class="dot">•</span><span>HISTORIAL</span>';
+            document.getElementById('tituloVista').innerHTML = 'Servimoto FN<span class="dot">•</span><span>HISTORIAL</span>';
         }
         
         document.getElementById('cajaBuscador').style.display = 'none';
@@ -537,6 +544,9 @@
             return;
         }
 
+        // OPTIMIZACIÓN DE RENDIMIENTO: Armamos todo el bloque de una vez para que la app no se cuelgue repintando
+        let htmlTarjetas = '';
+
         reportesFiltrados.forEach((item) => {
             const indexOriginal = reportesGlobales.indexOf(item);
             let fLista = item.fechaLista || item.fecha || "---";
@@ -554,7 +564,7 @@
             }
             const valorFormateado = numValor.toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
 
-            contenedor.innerHTML += `
+            htmlTarjetas += `
                 <div class="card" onclick="verDetalle(${indexOriginal}, 'entrar')">
                     <div class="card-header">
                         <span class="card-movil">${item.movil || '-'}</span>
@@ -571,6 +581,9 @@
                 </div>
             `;
         });
+
+        // Inyectamos todas las tarjetas de un solo golpe
+        contenedor.innerHTML = htmlTarjetas;
     }
 
     function verDetalle(index, tipoAnimacion = 'swipe') {
@@ -780,6 +793,20 @@
     document.getElementById('reporteForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
+        // --- CANDADO OPERATIVO: VALIDACIÓN DE VALOR ---
+        const valorInput = Number(document.getElementById('valor').value);
+        
+        if (valorInput < 4000) {
+            alert("❌ Error: El valor mínimo es $4.000. Escriba el número completo (ej: 4000, no 4).");
+            return; // Frena el envío en seco
+        }
+        
+        if (valorInput % 1000 !== 0) {
+            alert("❌ Error: El valor debe ser exacto en múltiplos de mil (ej: 4000, 5000). Sin picos.");
+            return; // Frena el envío en seco
+        }
+        // ----------------------------------------------
+        
         const overlay = document.getElementById('loadingOverlay');
         const btn = document.getElementById('btnEnviar');
         
@@ -844,9 +871,9 @@
                         pestanaActiva = 'recientes';
                         document.getElementById('btnTabRecientes').classList.add('active');
                         document.getElementById('btnTabHistorial').classList.remove('active');
-                        document.getElementById('tituloVista').innerHTML = 'Servimoto<span class="dot">•</span><span>HOY</span>';
+                        document.getElementById('tituloVista').innerHTML = 'Servimoto FN<span class="dot">•</span><span>HOY</span>';
                         
-                        // Limpieza del buscador (Error de sintaxis corregido aquí)
+                        // Limpieza del buscador
                         if(document.getElementById('cajaBuscador')) {
                             document.getElementById('cajaBuscador').style.display = 'none';
                         }
