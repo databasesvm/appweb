@@ -1,513 +1,873 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <title>Servimoto - FN</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L93 25 L93 75 L50 95 L7 75 L7 25 Z' fill='%23121212' stroke='%233AF500' stroke-width='8'/%3E%3Cpath d='M55 20 L30 55 L55 55 L45 80 L75 45 L50 45 Z' fill='%23e6b800'/%3E%3C/svg%3E">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L93 25 L93 75 L50 95 L7 75 L7 25 Z' fill='%23121212' stroke='%233AF500' stroke-width='8'/%3E%3Cpath d='M55 20 L30 55 L55 55 L45 80 L75 45 L50 45 Z' fill='%23e6b800'/%3E%3C/svg%3E">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <title>Servimoto - FN</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L93 25 L93 75 L50 95 L7 75 L7 25 Z' fill='%23121212' stroke='%233AF500' stroke-width='8'/%3E%3Cpath d='M55 20 L30 55 L55 55 L45 80 L75 45 L50 45 Z' fill='%23e6b800'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L93 25 L93 75 L50 95 L7 75 L7 25 Z' fill='%23121212' stroke='%233AF500' stroke-width='8'/%3E%3Cpath d='M55 20 L30 55 L55 55 L45 80 L75 45 L50 45 Z' fill='%23e6b800'/%3E%3C/svg%3E">
 
-    <style>
-        :root { 
-            --verde: #00a650; 
-            --dorado: #e6b800; 
-            --negro: #121212; 
-            --gris-oscuro: #333333;
-            --blanco: #ffffff;
-            --gris-fondo: #f0f2f5; 
-            --borde: #e4e6eb;
-        }
-        
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--gris-fondo); margin: 0; padding-bottom: 90px; overflow-x: hidden; color: var(--negro); -webkit-tap-highlight-color: transparent; }
-        
-        /* HEADER PREMIUM */
-        .header { background-color: var(--blanco); color: var(--negro); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .header-title { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
-        .header-title span { color: var(--verde); }
-        .header-title .dot { color: var(--dorado); font-size: 24px; line-height: 0; }
-        
-        .header button.icon-btn { background: var(--gris-fondo); border: none; font-size: 20px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-        .header button.icon-btn:active { background: #e0e0e0; }
-        .header button.icon-btn svg { transition: transform 0.4s ease; }
-        .header button.icon-btn.girando svg { transform: rotate(360deg); }
+    <style>
+        :root { 
+            --verde: #00a650; 
+            --dorado: #e6b800; 
+            --negro: #121212; 
+            --gris-oscuro: #333333;
+            --blanco: #ffffff;
+            --gris-fondo: #f0f2f5; 
+            --borde: #e4e6eb;
+        }
+        
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--gris-fondo); margin: 0; padding-bottom: 90px; overflow-x: hidden; color: var(--negro); -webkit-tap-highlight-color: transparent; }
+        
+        /* HEADER PREMIUM */
+        .header { background-color: var(--blanco); color: var(--negro); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header-title { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
+        .header-title span { color: var(--verde); }
+        .header-title .dot { color: var(--dorado); font-size: 24px; line-height: 0; }
+        
+        .header button.icon-btn { background: var(--gris-fondo); border: none; font-size: 20px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+        .header button.icon-btn:active { background: #e0e0e0; }
+        .header button.icon-btn svg { transition: transform 0.4s ease; }
+        .header button.icon-btn.girando svg { transform: rotate(360deg); }
 
-        /* BUSCADOR UNIVERSAL TÁCTICO */
-        .search-container { 
-            background: var(--blanco); 
-            padding: 10px 20px; 
-            border-bottom: 1px solid var(--borde); 
-            display: none; 
-            animation: fadeInTab 0.2s ease forwards;
-        }
-        .search-input { 
-            width: 100%; 
-            padding: 12px 15px; 
-            border: 1.5px solid var(--borde); 
-            border-radius: 10px; 
-            font-size: 15px; 
-            background-color: var(--gris-fondo); 
-            color: var(--negro); 
-            font-weight: 500;
-            outline: none; 
-            transition: all 0.2s ease;
-        }
-        .search-input:focus { 
-            border-color: var(--verde); 
-            background-color: var(--blanco);
-            box-shadow: 0 0 0 3px rgba(0, 166, 80, 0.1);
-        }
+        /* BUSCADOR UNIVERSAL TÁCTICO */
+        .search-container { 
+            background: var(--blanco); 
+            padding: 10px 20px; 
+            border-bottom: 1px solid var(--borde); 
+            display: none; 
+            animation: fadeInTab 0.2s ease forwards;
+        }
+        .search-input { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 1.5px solid var(--borde); 
+            border-radius: 10px; 
+            font-size: 15px; 
+            background-color: var(--gris-fondo); 
+            color: var(--negro); 
+            font-weight: 500;
+            outline: none; 
+            transition: all 0.2s ease;
+        }
+        .search-input:focus { 
+            border-color: var(--verde); 
+            background-color: var(--blanco);
+            box-shadow: 0 0 0 3px rgba(0, 166, 80, 0.1);
+        }
 
-        /* HEADER DETALLE / FORMULARIO (Fondo Verde) */
-        .header-detalle { background-color: var(--verde); color: var(--blanco); }
-        
-        /* BOTÓN TÁCTICO DE RETROCESO */
-        .header-detalle .btn-volver-flecha { 
-            background: var(--gris-fondo); 
-            border: none; 
-            color: var(--verde); 
-            width: 42px; 
-            height: 42px; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            cursor: pointer; 
-            transition: all 0.2s ease; 
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        .header-detalle .btn-volver-flecha:active { 
-            background: rgba(0, 0, 0, 0.2); 
-            transform: scale(0.92); 
-        }
+        /* HEADER DETALLE / FORMULARIO (Fondo Verde) */
+        .header-detalle { background-color: var(--verde); color: var(--blanco); }
+        
+        /* BOTÓN TÁCTICO DE RETROCESO */
+        .header-detalle .btn-volver-flecha { 
+            background: var(--gris-fondo); 
+            border: none; 
+            color: var(--verde); 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .header-detalle .btn-volver-flecha:active { 
+            background: rgba(0, 0, 0, 0.2); 
+            transform: scale(0.92); 
+        }
 
-        /* EL TAG DEL MÓVIL (Fondo negro, letras doradas) */
-        .header-detalle #tituloDetalle { 
-            display: inline-block; 
-            background: var(--negro); 
-            color: var(--dorado); 
-            font-size: 12px;
-            font-weight: bold;
-            padding: 6px 12px;
-            border-radius: 20px;
-            text-transform: uppercase; 
-            letter-spacing: 0.5px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
+        /* EL TAG DEL MÓVIL (Fondo negro, letras doradas) */
+        .header-detalle #tituloDetalle { 
+            display: inline-block; 
+            background: var(--negro); 
+            color: var(--dorado); 
+            font-size: 12px;
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
 
-        /* CONTENEDOR DE LISTA (CARDS) */
-        .list-container { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
-        
-        .card { background: var(--blanco); border-radius: 16px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 12px; cursor: pointer; transition: transform 0.1s; position: relative; overflow: hidden; }
-        .card:active { transform: scale(0.98); background-color: #fafafa; }
-        .card::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background-color: var(--verde); }
+        /* CONTENEDOR DE LISTA (CARDS) */
+        .list-container { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        
+        .card { background: var(--blanco); border-radius: 16px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 12px; cursor: pointer; transition: transform 0.1s; position: relative; overflow: hidden; }
+        .card:active { transform: scale(0.98); background-color: #fafafa; }
+        .card::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background-color: var(--verde); }
 
-        .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--borde); padding-bottom: 10px; }
-        .card-movil { background: var(--negro); color: var(--dorado); font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .card-fecha { font-size: 12px; color: #888; font-weight: 500; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--borde); padding-bottom: 10px; }
+        .card-movil { background: var(--negro); color: var(--dorado); font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-fecha { font-size: 12px; color: #888; font-weight: 500; }
 
-        .card-body { display: flex; justify-content: space-between; align-items: center; }
-        .card-price { font-size: 22px; font-weight: 800; color: var(--verde); letter-spacing: -0.5px; }
-        .card-sede { font-size: 14px; font-weight: 600; color: var(--gris-oscuro); text-align: right; max-width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-body { display: flex; justify-content: space-between; align-items: center; }
+        .card-price { font-size: 22px; font-weight: 800; color: var(--verde); letter-spacing: -0.5px; }
+        .card-sede { font-size: 14px; font-weight: 600; color: var(--gris-oscuro); text-align: right; max-width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .card-footer { display: flex; justify-content: space-between; align-items: center; background: var(--gris-fondo); padding: 10px 12px; border-radius: 10px; margin-top: 4px; }
-        .card-address { font-size: 13px; color: var(--negro); font-weight: 500; display: flex; align-items: center; gap: 5px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card-thumb { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; border: 2px solid var(--blanco); box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-left: 10px; flex-shrink: 0; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; background: var(--gris-fondo); padding: 10px 12px; border-radius: 10px; margin-top: 4px; }
+        .card-address { font-size: 13px; color: var(--negro); font-weight: 500; display: flex; align-items: center; gap: 5px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-thumb { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; border: 2px solid var(--blanco); box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-left: 10px; flex-shrink: 0; }
 
-        /* VISTA DETALLE LIMPIA */
-        #vistaDetalle { display: none; background: var(--gris-fondo); min-height: 100vh; position: relative; width: 100%; }
-        #contenidoDetalle { padding: 20px 15px; }
-        .detalle-bloque { background: var(--blanco); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); margin-bottom: 15px; }
-        
-        .detalle-fila { display: flex; justify-content: space-between; border-bottom: 1px solid var(--borde); padding: 12px 0; }
-        .detalle-fila:last-child { border-bottom: none; padding-bottom: 0; }
-        .detalle-label { font-size: 12px; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
-        .detalle-valor { font-size: 15px; color: var(--negro); font-weight: 700; text-align: right; max-width: 60%; }
-        .detalle-valor.destacado { color: var(--verde); font-size: 18px; }
-        
-        .detalle-foto-caja { background: var(--blanco); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); text-align: center; }
-        .detalle-foto { width: 100%; max-width: 300px; height: auto; border-radius: 12px; object-fit: cover; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 10px; }
+        /* VISTA DETALLE LIMPIA */
+        #vistaDetalle { display: none; background: var(--gris-fondo); min-height: 100vh; position: relative; width: 100%; }
+        #contenidoDetalle { padding: 20px 15px; }
+        .detalle-bloque { background: var(--blanco); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); margin-bottom: 15px; }
+        
+        .detalle-fila { display: flex; justify-content: space-between; border-bottom: 1px solid var(--borde); padding: 12px 0; }
+        .detalle-fila:last-child { border-bottom: none; padding-bottom: 0; }
+        .detalle-label { font-size: 12px; color: #888; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+        .detalle-valor { font-size: 15px; color: var(--negro); font-weight: 700; text-align: right; max-width: 60%; }
+        .detalle-valor.destacado { color: var(--verde); font-size: 18px; }
+        
+        .detalle-foto-caja { background: var(--blanco); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); text-align: center; }
+        .detalle-foto { width: 100%; max-width: 300px; height: auto; border-radius: 12px; object-fit: cover; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 10px; }
 
-        /* BARRA INFERIOR (BOTTOM NAV) */
-        .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; background: var(--blanco); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); display: flex; justify-content: space-around; align-items: center; z-index: 900; border-top-left-radius: 20px; border-top-right-radius: 20px; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 33%; cursor: pointer; color: #a0a0a0; transition: color 0.2s; }
-        .nav-item.active { color: var(--verde); }
-        .nav-icon { font-size: 22px; margin-bottom: 4px; }
-        .nav-label { font-size: 11px; font-weight: 600; }
-        
-        /* BOTÓN FLOTANTE CENTRAL (FAB) */
-        .fab-wrapper { position: relative; top: -25px; }
-        .fab-center { width: 64px; height: 64px; background: linear-gradient(135deg, var(--dorado), #c59b00); color: var(--blanco); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 6px 15px rgba(230, 184, 0, 0.4); border: 4px solid var(--gris-fondo); transition: transform 0.1s; }
-        .fab-center:active { transform: scale(0.92); }
+        /* BARRA INFERIOR (BOTTOM NAV) */
+        .bottom-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; background: var(--blanco); box-shadow: 0 -4px 15px rgba(0,0,0,0.05); display: flex; justify-content: space-around; align-items: center; z-index: 900; border-top-left-radius: 20px; border-top-right-radius: 20px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 33%; cursor: pointer; color: #a0a0a0; transition: color 0.2s; }
+        .nav-item.active { color: var(--verde); }
+        .nav-icon { font-size: 22px; margin-bottom: 4px; }
+        .nav-label { font-size: 11px; font-weight: 600; }
+        
+        /* BOTÓN FLOTANTE CENTRAL (FAB) */
+        .fab-wrapper { position: relative; top: -25px; }
+        .fab-center { width: 64px; height: 64px; background: linear-gradient(135deg, var(--dorado), #c59b00); color: var(--blanco); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 6px 15px rgba(230, 184, 0, 0.4); border: 4px solid var(--gris-fondo); transition: transform 0.1s; }
+        .fab-center:active { transform: scale(0.92); }
 
-        /* NAVEGACIÓN DETALLE */
-        .nav-btn { position: fixed; top: 50%; transform: translateY(-50%); background-color: rgba(255,255,255,0.9); color: var(--negro); border: none; width: 40px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 20px; z-index: 80; cursor: pointer; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .nav-btn.prev { left: 5px; }
-        .nav-btn.next { right: 5px; }
-        .nav-btn:disabled { display: none; }
+        /* NAVEGACIÓN DETALLE */
+        .nav-btn { position: fixed; top: 50%; transform: translateY(-50%); background-color: rgba(255,255,255,0.9); color: var(--negro); border: none; width: 40px; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 20px; z-index: 80; cursor: pointer; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .nav-btn.prev { left: 5px; }
+        .nav-btn.next { right: 5px; }
+        .nav-btn:disabled { display: none; }
 
-        /* FORMULARIO DE REPORTE */
-        #vistaFormulario { display: none; background: var(--gris-fondo); min-height: 100vh; }
-        .form-body { padding: 20px 15px; }
-        .form-card { background: var(--blanco); padding: 25px 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
-        label { font-weight: 700; display: block; margin-top: 15px; font-size: 11px; color: var(--gris-oscuro); text-transform: uppercase; letter-spacing: 0.5px; }
-        label:first-child { margin-top: 0; }
-        select, input { width: 100%; padding: 14px; margin-top: 8px; border: 1.5px solid var(--borde); border-radius: 10px; box-sizing: border-box; font-size: 16px; background-color: var(--gris-fondo); -webkit-appearance: none; font-weight: 500; color: var(--negro); transition: border-color 0.2s; }
-        select:focus, input:focus { border-color: var(--verde); outline: none; background-color: var(--blanco); box-shadow: 0 0 0 4px rgba(0, 166, 80, 0.1); }
-        .btn-enviar { background-color: var(--verde); color: var(--blanco); border: none; width: 100%; padding: 16px; margin-top: 30px; border-radius: 12px; font-size: 16px; font-weight: 800; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 166, 80, 0.3); transition: background 0.2s, transform 0.1s; }
-        .btn-enviar:active { background-color: #008f45; transform: scale(0.98); }
-        .btn-enviar:disabled { background-color: #cccccc; box-shadow: none; cursor: not-allowed; }
-        
-        /* MODAL Y LOADING (ZOOM DEFINITIVO) */
-        #modalZoom { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; overflow: hidden; }
-        .zoom-wrapper { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; touch-action: none; }
-        #fotoAmpliada { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: 0 0; }
-        .cerrar-zoom { position: absolute; top: 20px; right: 20px; color: white; font-size: 35px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; z-index: 10001; background: rgba(0,0,0,0.5); border-radius: 50%; cursor: pointer; }
+        /* FORMULARIO DE REPORTE */
+        #vistaFormulario { display: none; background: var(--gris-fondo); min-height: 100vh; }
+        .form-body { padding: 20px 15px; }
+        .form-card { background: var(--blanco); padding: 25px 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+        label { font-weight: 700; display: block; margin-top: 15px; font-size: 11px; color: var(--gris-oscuro); text-transform: uppercase; letter-spacing: 0.5px; }
+        label:first-child { margin-top: 0; }
+        select, input { width: 100%; padding: 14px; margin-top: 8px; border: 1.5px solid var(--borde); border-radius: 10px; box-sizing: border-box; font-size: 16px; background-color: var(--gris-fondo); -webkit-appearance: none; font-weight: 500; color: var(--negro); transition: border-color 0.2s; }
+        select:focus, input:focus { border-color: var(--verde); outline: none; background-color: var(--blanco); box-shadow: 0 0 0 4px rgba(0, 166, 80, 0.1); }
+        .btn-enviar { background-color: var(--verde); color: var(--blanco); border: none; width: 100%; padding: 16px; margin-top: 30px; border-radius: 12px; font-size: 16px; font-weight: 800; letter-spacing: 0.5px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 166, 80, 0.3); transition: background 0.2s, transform 0.1s; }
+        .btn-enviar:active { background-color: #008f45; transform: scale(0.98); }
+        .btn-enviar:disabled { background-color: #cccccc; box-shadow: none; cursor: not-allowed; }
+        
+        /* MODAL Y LOADING (ZOOM DEFINITIVO) */
+        #modalZoom { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; overflow: hidden; }
+        .zoom-wrapper { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; touch-action: none; }
+        #fotoAmpliada { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: 0 0; }
+        .cerrar-zoom { position: absolute; top: 20px; right: 20px; color: white; font-size: 35px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; z-index: 10001; background: rgba(0,0,0,0.5); border-radius: 50%; cursor: pointer; }
 
-        /* CONTROLES TÁCTICOS +/- */
-        .zoom-controls { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 30px; z-index: 10002; }
-        .zoom-btn { background: rgba(0, 0, 0, 0.7); border: 2px solid var(--blanco); color: var(--blanco); width: 50px; height: 50px; border-radius: 50%; font-size: 30px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); backdrop-filter: blur(5px); transition: all 0.1s; }
-        .zoom-btn:active { background: var(--verde); border-color: var(--verde); transform: scale(0.9); }
+        /* CONTROLES TÁCTICOS +/- */
+        .zoom-controls { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); display: flex; gap: 30px; z-index: 10002; }
+        .zoom-btn { background: rgba(0, 0, 0, 0.7); border: 2px solid var(--blanco); color: var(--blanco); width: 50px; height: 50px; border-radius: 50%; font-size: 30px; font-weight: bold; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); backdrop-filter: blur(5px); transition: all 0.1s; }
+        .zoom-btn:active { background: var(--verde); border-color: var(--verde); transform: scale(0.9); }
 
-        /* CARGANDO */
-        #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 2000; flex-direction: column; justify-content: center; align-items: center; color: var(--verde); font-weight: bold; }
-        .spinner { border: 4px solid var(--borde); border-top: 4px solid var(--verde); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin-bottom: 15px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-list { text-align: center; padding: 50px 20px; color: #888; font-size: 14px; font-weight: 500; }
+        /* CARGANDO */
+        #loadingOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); z-index: 2000; flex-direction: column; justify-content: center; align-items: center; color: var(--verde); font-weight: bold; }
+        .spinner { border: 4px solid var(--borde); border-top: 4px solid var(--verde); border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-list { text-align: center; padding: 50px 20px; color: #888; font-size: 14px; font-weight: 500; }
 
-        /* ANIMACIONES FLUIDAS */
-        @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes fadeSwipe { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-        .anim-derecha { animation: slideInRight 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-        .anim-izquierda { animation: slideInLeft 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-        .anim-swipe { animation: fadeSwipe 0.2s ease-in-out forwards; }
-        @keyframes fadeInTab { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        .anim-pestana { animation: fadeInTab 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        /* ANIMACIONES FLUIDAS */
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fadeSwipe { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        .anim-derecha { animation: slideInRight 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .anim-izquierda { animation: slideInLeft 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .anim-swipe { animation: fadeSwipe 0.2s ease-in-out forwards; }
+        @keyframes fadeInTab { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .anim-pestana { animation: fadeInTab 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
-    </style>
-    <script src="https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js"></script>
+    </style>
+    <script src="https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js"></script>
 </head>
 <body>
 
-    <div id="vistaLista">
-        <div class="header">
-            <div class="header-title" id="tituloVista">Servimoto FN<span class="dot">•</span><span>HOY</span></div>
-            <div style="display: flex; gap: 8px;">
-                <button class="icon-btn" onclick="toggleBuscador()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gris-oscuro)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                </button>
-                <button class="icon-btn" id="btnSync" onclick="descargarDatos()">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--verde)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
-                        <path d="M21 3v5h-5"></path>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <div class="search-container" id="cajaBuscador">
-            <input type="text" id="inputBuscador" class="search-input" placeholder="Buscar móvil, sede, factura..." onkeyup="filtrarEnVivo()">
-        </div>
+    <div id="vistaLista">
+        <div class="header">
+            <div class="header-title" id="tituloVista">Servimoto<span class="dot">•</span><span>HOY</span></div>
+            <div style="display: flex; gap: 8px;">
+                <button class="icon-btn" onclick="toggleBuscador()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gris-oscuro)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+                <button class="icon-btn" id="btnSync" onclick="descargarDatos()">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--verde)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+                        <path d="M21 3v5h-5"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="search-container" id="cajaBuscador">
+            <input type="text" id="inputBuscador" class="search-input" placeholder="Buscar móvil, sede, factura..." onkeyup="filtrarEnVivo()">
+        </div>
 
-        <div id="contenedorLista" class="list-container">
-            <div class="loading-list">Sincronizando con la central...</div>
-        </div>
-    </div>
+        <div id="contenedorLista" class="list-container">
+            <div class="loading-list">Sincronizando con la central...</div>
+        </div>
+    </div>
 
-    <div id="vistaDetalle">
-        <div class="header header-detalle">
-            <button onclick="cerrarDetalle()" class="btn-volver-flecha">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-            </button>
-            <span id="tituloDetalle">Detalle</span>
-            <span style="width: 42px;"></span> 
-        </div>
-        
-        <button id="btnPrev" class="nav-btn prev" onclick="anteriorReporte()">❮</button>
-        <button id="btnNext" class="nav-btn next" onclick="siguienteReporte()">❯</button>
-        
-        <div id="swipeContainer">
-            <div id="contenidoDetalle"></div>
-        </div>
-    </div>
+    <div id="vistaDetalle">
+        <div class="header header-detalle">
+            <button onclick="cerrarDetalle()" class="btn-volver-flecha">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
+            <span id="tituloDetalle">Detalle</span>
+            <span style="width: 42px;"></span> 
+        </div>
+        
+        <button id="btnPrev" class="nav-btn prev" onclick="anteriorReporte()">❮</button>
+        <button id="btnNext" class="nav-btn next" onclick="siguienteReporte()">❯</button>
+        
+        <div id="swipeContainer">
+            <div id="contenidoDetalle"></div>
+        </div>
+    </div>
 
-    <div id="vistaFormulario">
-        <div class="header header-detalle">
-            <button class="btn-volver-flecha" onclick="mostrarLista()">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-            </button>
-            <span style="font-weight: 600;">Nuevo Reporte</span>
-            <span style="width: 42px;"></span>
-        </div>
-        <div class="form-body">
-            <div class="form-card">
-                <form id="reporteForm">
-                    <label>MÓVIL OPERATIVO</label>
-                    <select id="movil" required>
-                        <option value="">-- Seleccione --</option>
-                        <option value="Movil 01">Móvil 01</option>
-                        <option value="Movil 02">Móvil 02</option>
-                        <option value="Movil 03">Móvil 03</option>
-                        <option value="Movil 04">Móvil 04</option>
-                        <option value="Movil 05">Móvil 05</option>
-                        <option value="Movil 08">Móvil 08</option>
-                        <option value="Movil 54">Móvil 54</option>
-                        <option value="Movil 55">Móvil 55</option>
-                        <option value="Movil 56">Móvil 56</option>
-                        <option value="Movil 57">Móvil 57</option>
-                        <option value="Movil 58">Móvil 58</option>
-                        <option value="Movil 59">Móvil 59</option>
-                        <option value="Movil 60">Móvil 60</option>
-                        <option value="Movil 61">Móvil 61</option>
-                        <option value="Movil 62">Móvil 62</option>
-                        <option value="Movil 63">Móvil 63</option>
-                        <option value="Movil 64">Móvil 64</option>
-                        <option value="Movil 65">Móvil 65</option>
-                        <option value="Movil 66">Móvil 66</option>
-                        <option value="Movil 67">Móvil 67</option>
-                        <option value="Movil 68">Móvil 68</option>
-                        <option value="Movil 69">Móvil 69</option>
-                        <option value="Movil 70">Móvil 70</option>
-                        <option value="Movil 71">Móvil 71</option>
-                        <option value="Movil 72">Móvil 72</option>
-                        <option value="Movil 73">Móvil 73</option>
-                        <option value="Movil 74">Móvil 74</option>
-                        <option value="Movil 75">Móvil 75</option>
-                        <option value="Movil 76">Móvil 76</option>
-                        <option value="Movil 77">Móvil 77</option>
-                        <option value="Movil 78">Móvil 78</option>
-                        <option value="Movil 79">Móvil 79</option>
-                        <option value="Movil 80">Móvil 80</option>
-                        <option value="Movil 81">Móvil 81</option>
-                        <option value="Movil 82">Móvil 82</option>
-                        <option value="Movil 83">Móvil 83</option>
-                        <option value="Movil 84">Móvil 84</option>
-                        <option value="Movil 85">Móvil 85</option>
-                        <option value="Movil 86">Móvil 86</option>
-                        <option value="Movil 87">Móvil 87</option>
-                        <option value="Movil 88">Móvil 88</option>
-                        <option value="Movil 89">Móvil 89</option>
-                        <option value="Movil 90">Móvil 90</option>
-                        <option value="Movil 91">Móvil 91</option>
-                        <option value="Movil 92">Móvil 92</option>
-                        <option value="Movil 93">Móvil 93</option>
-                        <option value="Movil 94">Móvil 94</option>
-                        <option value="Movil 95">Móvil 95</option>
-                        <option value="Movil 96">Móvil 96</option>
-                        <option value="Movil 97">Móvil 97</option>
-                        <option value="Movil 98">Móvil 98</option>
-                        <option value="Movil 99">Móvil 99</option>
-                        <option value="Movil 100">Móvil 100</option>
-                        <option value="F3">F3</option>
-                        <option value="F5">F5</option>
-                    </select>
+    <div id="vistaFormulario">
+        <div class="header header-detalle">
+            <button class="btn-volver-flecha" onclick="mostrarLista()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </button>
+            <span style="font-weight: 600;">Nuevo Reporte</span>
+            <span style="width: 42px;"></span>
+        </div>
+        <div class="form-body">
+            <div class="form-card">
+                <form id="reporteForm">
+                    <label>MÓVIL OPERATIVO</label>
+                    <select id="movil" required>
+                        <option value="">-- Seleccione --</option>
+                        <option value="Movil 01">Móvil 01</option>
+                        <option value="Movil 02">Móvil 02</option>
+                        <option value="Movil 03">Móvil 03</option>
+                        <option value="Movil 04">Móvil 04</option>
+                        <option value="Movil 05">Móvil 05</option>
+                        <option value="Movil 08">Móvil 08</option>
+                        <option value="Movil 54">Móvil 54</option>
+                        <option value="Movil 55">Móvil 55</option>
+                        <option value="Movil 56">Móvil 56</option>
+                        <option value="Movil 57">Móvil 57</option>
+                        <option value="Movil 58">Móvil 58</option>
+                        <option value="Movil 59">Móvil 59</option>
+                        <option value="Movil 60">Móvil 60</option>
+                        <option value="Movil 61">Móvil 61</option>
+                        <option value="Movil 62">Móvil 62</option>
+                        <option value="Movil 63">Móvil 63</option>
+                        <option value="Movil 64">Móvil 64</option>
+                        <option value="Movil 65">Móvil 65</option>
+                        <option value="Movil 66">Móvil 66</option>
+                        <option value="Movil 67">Móvil 67</option>
+                        <option value="Movil 68">Móvil 68</option>
+                        <option value="Movil 69">Móvil 69</option>
+                        <option value="Movil 70">Móvil 70</option>
+                        <option value="Movil 71">Móvil 71</option>
+                        <option value="Movil 72">Móvil 72</option>
+                        <option value="Movil 73">Móvil 73</option>
+                        <option value="Movil 74">Móvil 74</option>
+                        <option value="Movil 75">Móvil 75</option>
+                        <option value="Movil 76">Móvil 76</option>
+                        <option value="Movil 77">Móvil 77</option>
+                        <option value="Movil 78">Móvil 78</option>
+                        <option value="Movil 79">Móvil 79</option>
+                        <option value="Movil 80">Móvil 80</option>
+                        <option value="Movil 81">Móvil 81</option>
+                        <option value="Movil 82">Móvil 82</option>
+                        <option value="Movil 83">Móvil 83</option>
+                        <option value="Movil 84">Móvil 84</option>
+                        <option value="Movil 85">Móvil 85</option>
+                        <option value="Movil 86">Móvil 86</option>
+                        <option value="Movil 87">Móvil 87</option>
+                        <option value="Movil 88">Móvil 88</option>
+                        <option value="Movil 89">Móvil 89</option>
+                        <option value="Movil 90">Móvil 90</option>
+                        <option value="Movil 91">Móvil 91</option>
+                        <option value="Movil 92">Móvil 92</option>
+                        <option value="Movil 93">Móvil 93</option>
+                        <option value="Movil 94">Móvil 94</option>
+                        <option value="Movil 95">Móvil 95</option>
+                        <option value="Movil 96">Móvil 96</option>
+                        <option value="Movil 97">Móvil 97</option>
+                        <option value="Movil 98">Móvil 98</option>
+                        <option value="Movil 99">Móvil 99</option>
+                        <option value="Movil 100">Móvil 100</option>
+                        <option value="F3">F3</option>
+                        <option value="F5">F5</option>
+                    </select>
 
-                    <label>FARMANORTE SOLICITANTE</label>
-                    <select id="sede" required>
-                        <option value="">-- Seleccione Sede --</option>
-                        <option value="FN01">FN01 La Sabana Patios</option>
-                        <option value="FN03">FN03 Prados Norte</option>
-                        <option value="FN04">FN04 La Libertad</option>
-                        <option value="FN07">FN07 Alto Pamplonita</option>
-                        <option value="FN11">FN11 Detras Ventura</option>
-                        <option value="FN12">FN12 La Riviera</option>
-                        <option value="FN13">FN13 La Canasta</option>
-                        <option value="FN14">FN14 Loma de Bolivar</option>
-                        <option value="FN18">FN18 La Playa - Jerico</option>
-                        <option value="FN19">FN19 Av 0 Cll 9</option>
-                        <option value="FN20">FN20 Centro</option>
-                        <option value="FN24">FN24 Av 0 Cll 11</option>
-                        <option value="FN23">FN23</option>
-                        <option value="FN25">FN25 Pinar del Rio</option>
-                        <option value="FN27">FN27 Prados del Este</option>
-                        <option value="FN30">FN30 Por la 10 Los Patios</option>
-                        <option value="FN31">FN31 </option>
-                        <option value="FN32">FN32 Parque del Rosario</option>
-                        <option value="FN33">FN33 La Playa</option>
-                        <option value="FN34">FN34 Calle 13 Caobos</option>
-                        <option value="FN35">FN35 Hospital Guaimaral</option>
-                        <option value="FN66">FN66 Ceiba</option>
-                        <option value="FN67">FN67 San Luis</option>
-                        <option value="FN69">FN69 Av 0 Faroles</option>
-                        <option value="FN82">FN82 Bocono</option>
-                        <option value="FN100">FN100 Dentro del Ventura</option>
-                        <option value="FN104">FN104 Av 11 Guaimaral</option>
-                        <option value="FN107">FN107 Villa Antigua</option>
-                        <option value="FN108">FN108 Colsag</option>
-                        <option value="FN109">FN109 Cc La Floresta</option>
-                        <option value="FN118">FN118 Av9e Quinta Oriental</option>
-                        <option value="FN127">FN127</option>
-                        <option value="FN128">FN128</option>
-                        <option value="FN214">FN214 Escobal</option>
-                        <option value="FN275">FN275 Cordialidad Patios</option>
-                        <option value="FN283">FN283 Trapiches Bomba</option>
-                        <option value="FN293">FN293 Trapiches Paradero</option>
-                        <option value="FN298">FN298 Videlso</option>
-                        <option value="FN309">FN309 Variante</option>
-                        <option value="FN356">FN356 Parque Santander</option>
-                    </select>
+                    <label>FARMANORTE SOLICITANTE</label>
+                    <select id="sede" required>
+                        <option value="">-- Seleccione Sede --</option>
+                        <option value="FN01">FN01 La Sabana Patios</option>
+                        <option value="FN03">FN03 Prados Norte</option>
+                        <option value="FN04">FN04 La Libertad</option>
+                        <option value="FN07">FN07 Alto Pamplonita</option>
+                        <option value="FN11">FN11 Detras Ventura</option>
+                        <option value="FN12">FN12 La Riviera</option>
+                        <option value="FN13">FN13 La Canasta</option>
+                        <option value="FN14">FN14 Loma de Bolivar</option>
+                        <option value="FN18">FN18 La Playa - Jerico</option>
+                        <option value="FN19">FN19 Av 0 Cll 9</option>
+                        <option value="FN20">FN20 Centro</option>
+                        <option value="FN24">FN24 Av 0 Cll 11</option>
+                        <option value="FN23">FN23</option>
+                        <option value="FN25">FN25 Pinar del Rio</option>
+                        <option value="FN27">FN27 Prados del Este</option>
+                        <option value="FN30">FN30 Por la 10 Los Patios</option>
+                        <option value="FN31">FN31 </option>
+                        <option value="FN32">FN32 Parque del Rosario</option>
+                        <option value="FN33">FN33 La Playa</option>
+                        <option value="FN34">FN34 Calle 13 Caobos</option>
+                        <option value="FN35">FN35 Hospital Guaimaral</option>
+                        <option value="FN66">FN66 Ceiba</option>
+                        <option value="FN67">FN67 San Luis</option>
+                        <option value="FN69">FN69 Av 0 Faroles</option>
+                        <option value="FN82">FN82 Bocono</option>
+                        <option value="FN100">FN100 Dentro del Ventura</option>
+                        <option value="FN104">FN104 Av 11 Guaimaral</option>
+                        <option value="FN107">FN107 Villa Antigua</option>
+                        <option value="FN108">FN108 Colsag</option>
+                        <option value="FN109">FN109 Cc La Floresta</option>
+                        <option value="FN118">FN118 Av9e Quinta Oriental</option>
+                        <option value="FN127">FN127</option>
+                        <option value="FN128">FN128</option>
+                        <option value="FN214">FN214 Escobal</option>
+                        <option value="FN275">FN275 Cordialidad Patios</option>
+                        <option value="FN283">FN283 Trapiches Bomba</option>
+                        <option value="FN293">FN293 Trapiches Paradero</option>
+                        <option value="FN298">FN298 Videlso</option>
+                        <option value="FN309">FN309 Variante</option>
+                        <option value="FN356">FN356 Parque Santander</option>
+                    </select>
 
-                    <label>RECOGIDAS / COMPRAS</label>
-                    <input type="text" id="recogidas" placeholder="Detalle (Opcional)">
+                    <label>RECOGIDAS / COMPRAS</label>
+                    <input type="text" id="recogidas" placeholder="Detalle (Opcional)">
 
-                    <label>NRO. FACTURA</label>
-                    <input type="text" id="factura" placeholder="Ej: 123456" required>
+                    <label>NRO. FACTURA</label>
+                    <input type="text" id="factura" placeholder="Ej: 123456" required>
 
-                    <label>VALOR DOMICILIO ($)</label>
-                    <input type="number" id="valor" placeholder="Ej: 4000, 5000..." min="4000" step="1000" required>
+                    <label>VALOR DOMICILIO ($)</label>
+                    <input type="number" id="valor" placeholder="Ej: 4000, 5000..." min="4000" step="1000" required>
 
-                    <label>DIRECCIÓN EXACTA</label>
-                    <input type="text" id="direccion" placeholder="Dirección de entrega" required>
+                    <label>DIRECCIÓN EXACTA</label>
+                    <input type="text" id="direccion" placeholder="Dirección de entrega" required>
 
-                    <label>FOTO DEL SOPORTE</label>
-                    <input type="file" id="foto" accept="image/*" capture="environment" required style="border:none; padding:10px 0; background:none;">
+                    <label>FOTO DEL SOPORTE</label>
+                    <input type="file" id="foto" accept="image/*" capture="environment" required style="border:none; padding:10px 0; background:none;">
 
-                    <button type="submit" class="btn-enviar" id="btnEnviar">ENVIAR REPORTE</button>
-                </form>
-            </div>
-        </div>
-    </div>
+                    <button type="submit" class="btn-enviar" id="btnEnviar">ENVIAR REPORTE</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-    <div class="bottom-bar" id="bottomBar">
-        <div class="nav-item active" id="btnTabRecientes" onclick="cambiarPestana('recientes')">
-            <span class="nav-icon">📋</span>
-            <span class="nav-label">Hoy</span>
-        </div>
-        <div class="nav-item fab-wrapper" onclick="mostrarFormulario()">
-            <div class="fab-center">+</div>
-        </div>
-        <div class="nav-item" id="btnTabHistorial" onclick="cambiarPestana('historial')">
-            <span class="nav-icon">📊</span>
-            <span class="nav-label">Historial</span>
-        </div>
-    </div>
+    <div class="bottom-bar" id="bottomBar">
+        <div class="nav-item active" id="btnTabRecientes" onclick="cambiarPestana('recientes')">
+            <span class="nav-icon">📋</span>
+            <span class="nav-label">Hoy</span>
+        </div>
+        <div class="nav-item fab-wrapper" onclick="mostrarFormulario()">
+            <div class="fab-center">+</div>
+        </div>
+        <div class="nav-item" id="btnTabHistorial" onclick="cambiarPestana('historial')">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Historial</span>
+        </div>
+    </div>
 
-    <div id="modalZoom">
-        <span class="cerrar-zoom" onclick="cerrarZoom()">×</span>
-        <div id="zoomWrapper" class="zoom-wrapper"></div>
-        
-        <div class="zoom-controls">
-            <button class="zoom-btn" onclick="zoomMenos()">-</button>
-            <button class="zoom-btn" onclick="zoomMas()">+</button>
-        </div>
-    </div>
+    <div id="modalZoom">
+        <span class="cerrar-zoom" onclick="cerrarZoom()">×</span>
+        <div id="zoomWrapper" class="zoom-wrapper"></div>
+        
+        <div class="zoom-controls">
+            <button class="zoom-btn" onclick="zoomMenos()">-</button>
+            <button class="zoom-btn" onclick="zoomMas()">+</button>
+        </div>
+    </div>
 
-    <div id="loadingOverlay">
-        <div class="spinner"></div>
-        <div id="loadingText">Procesando...</div>
-    </div>
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <div id="loadingText">Procesando...</div>
+    </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx0X01UtWvlZnIZaMltkSoeOovj4m_Fi_HfLlM-K1oMEbZ9DIe-kInUZ73dxPQfNxe88w/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx0X01UtWvlZnIZaMltkSoeOovj4m_Fi_HfLlM-K1oMEbZ9DIe-kInUZ73dxPQfNxe88w/exec";
 
-    let reportesGlobales = []; 
-    let indiceActual = -1;    
-    let pestanaActiva = 'recientes'; 
-    let elPinch = null;
+    let reportesGlobales = []; 
+    let indiceActual = -1;    
+    let pestanaActiva = 'recientes'; 
+    let elPinch = null;
 
-    window.onload = () => {
-        descargarDatos();
-        configurarSwipe(); 
-    };
+    window.onload = () => {
+        descargarDatos();
+        configurarSwipe(); 
+    };
 
-    function descargarDatos() {
-        const contenedor = document.getElementById('contenedorLista');
-        const btnSync = document.getElementById('btnSync');
-        
-        if(btnSync) {
-            btnSync.classList.add('girando');
-            setTimeout(() => btnSync.classList.remove('girando'), 400);
-        }
+    function descargarDatos() {
+        const contenedor = document.getElementById('contenedorLista');
+        const btnSync = document.getElementById('btnSync');
+        
+        if(btnSync) {
+            btnSync.classList.add('girando');
+            setTimeout(() => btnSync.classList.remove('girando'), 400);
+        }
 
-        let textosCarga = [];
-        if (pestanaActiva === 'recientes') {
-            textosCarga = [
-                "Sincronizando con Servimoto...",
-                "Cargando datos de Hoy..."
-            ];
-        } else {
-            textosCarga = [
-                "Sincronizando con Servimoto...",
-                "El 60 esta Serca...",
-                "El 63 es Cacorro..."
-            ];
-        }
+        let textosCarga = [];
+        if (pestanaActiva === 'recientes') {
+            textosCarga = [
+                "Sincronizando con Servimoto...",
+                "Cargando datos de Hoy..."
+            ];
+        } else {
+            textosCarga = [
+                "Sincronizando con Servimoto...",
+                "El 60 esta Serca...",
+                "El 63 es Cacorro..."
+            ];
+        }
 
-        let paso = 0;
+        let paso = 0;
 
-        contenedor.innerHTML = `
-            <div style="display: flex; flex-direction: column; align-items: center; padding-top: 50px;">
-                <div class="spinner"></div>
-                <div id="textoAnimado" style="color: #888; font-size: 14px; font-weight: 500; margin-top: 15px; transition: opacity 0.3s;">
-                    ${textosCarga[0]}
-                </div>
-            </div>
-        `;
+        contenedor.innerHTML = `
+            <div style="display: flex; flex-direction: column; align-items: center; padding-top: 50px;">
+                <div class="spinner"></div>
+                <div id="textoAnimado" style="color: #888; font-size: 14px; font-weight: 500; margin-top: 15px; transition: opacity 0.3s;">
+                    ${textosCarga[0]}
+                </div>
+            </div>
+        `;
 
-        const rotador = setInterval(() => {
-            paso = (paso + 1) % textosCarga.length;
-            const elementoTexto = document.getElementById('textoAnimado');
-            if (elementoTexto) {
-                elementoTexto.innerText = textosCarga[paso];
-            } else {
-                clearInterval(rotador); 
-            }
-        }, 2500);
-        
-        const urlConFiltro = WEB_APP_URL + "?filtro=" + pestanaActiva + "&_ts=" + new Date().getTime();
-        
-        fetch(urlConFiltro)
-            .then(res => res.json())
-            .then(data => {
-                clearInterval(rotador); 
-                reportesGlobales = data; 
-                renderizarLista();
-            })
-            .catch(err => {
-                clearInterval(rotador); 
-                contenedor.innerHTML = '<div class="loading-list" style="color:red;">Error de conexión. Revise la señal.</div>';
-                console.error(err);
-            });
-    }
+        const rotador = setInterval(() => {
+            paso = (paso + 1) % textosCarga.length;
+            const elementoTexto = document.getElementById('textoAnimado');
+            if (elementoTexto) {
+                elementoTexto.innerText = textosCarga[paso];
+            } else {
+                clearInterval(rotador); 
+            }
+        }, 2500);
+        
+        const urlConFiltro = WEB_APP_URL + "?filtro=" + pestanaActiva + "&_ts=" + new Date().getTime();
+        
+        fetch(urlConFiltro)
+            .then(res => res.json())
+            .then(data => {
+                clearInterval(rotador); 
+                reportesGlobales = data; 
+                renderizarLista();
+            })
+            .catch(err => {
+                clearInterval(rotador); 
+                contenedor.innerHTML = '<div class="loading-list" style="color:red;">Error de conexión. Revise la señal.</div>';
+                console.error(err);
+            });
+    }
 
-    function cambiarPestana(pestana) {
-        if (pestanaActiva === pestana) return; 
+    function cambiarPestana(pestana) {
+        if (pestanaActiva === pestana) return; 
 
-        pestanaActiva = pestana;
-        
-        document.getElementById('btnTabRecientes').classList.remove('active');
-        document.getElementById('btnTabHistorial').classList.remove('active');
-        
-        if (pestana === 'recientes') {
-            document.getElementById('btnTabRecientes').classList.add('active');
-            document.getElementById('tituloVista').innerHTML = 'Servimoto FN<span class="dot">•</span><span>HOY</span>';
-        } else {
-            document.getElementById('btnTabHistorial').classList.add('active');
-            document.getElementById('tituloVista').innerHTML = 'Servimoto FN<span class="dot">•</span><span>HISTORIAL</span>';
-        }
-        
-        document.getElementById('cajaBuscador').style.display = 'none';
-        document.getElementById('inputBuscador').value = '';
-        
-        descargarDatos();
-    }
+        pestanaActiva = pestana;
+        
+        document.getElementById('btnTabRecientes').classList.remove('active');
+        document.getElementById('btnTabHistorial').classList.remove('active');
+        
+        if (pestana === 'recientes') {
+            document.getElementById('btnTabRecientes').classList.add('active');
+            document.getElementById('tituloVista').innerHTML = 'Servimoto<span class="dot">•</span><span>HOY</span>';
+        } else {
+            document.getElementById('btnTabHistorial').classList.add('active');
+            document.getElementById('tituloVista').innerHTML = 'Servimoto<span class="dot">•</span><span>HISTORIAL</span>';
+        }
+        
+        document.getElementById('cajaBuscador').style.display = 'none';
+        document.getElementById('inputBuscador').value = '';
+        
+        descargarDatos();
+    }
 
-    function toggleBuscador() {
-        const caja = document.getElementById('cajaBuscador');
-        const input = document.getElementById('inputBuscador');
-        if (caja.style.display === 'block') {
-            caja.style.display = 'none';
-            input.value = ''; 
-            renderizarLista(); 
-        } else {
-            caja.style.display = 'block';
-            input.focus(); 
-        }
+    function toggleBuscador() {
+        const caja = document.getElementById('cajaBuscador');
+        const input = document.getElementById('inputBuscador');
+        if (caja.style.display === 'block') {
+            caja.style.display = 'none';
+            input.value = ''; 
+            renderizarLista(); 
+        } else {
+            caja.style.display = 'block';
+            input.focus(); 
+        }
+    }
+
+    function filtrarEnVivo() {
+        const texto = document.getElementById('inputBuscador').value.toLowerCase();
+        renderizarLista(texto); 
+    }
+
+    function renderizarLista(filtroBusqueda = '') {
+        const contenedor = document.getElementById('contenedorLista');
+        contenedor.innerHTML = '';
+        
+        if(reportesGlobales.length === 0) {
+            const mensaje = (pestanaActiva === 'recientes') ? 'No hay ningún reporte el día de hoy.' : 'No hay historial de ayer ni antier.';
+            contenedor.innerHTML = `<div class="loading-list">${mensaje}</div>`;
+            return;
+        }
+
+        const reportesFiltrados = reportesGlobales.filter(item => {
+            if(!filtroBusqueda) return true;
+            const escaneoCompleto = `${item.movil} ${item.sede} ${item.factura} ${item.direccion} ${item.valor} ${item.fechaLista}`.toLowerCase();
+            return escaneoCompleto.includes(filtroBusqueda);
+        });
+
+        if(reportesFiltrados.length === 0) {
+            contenedor.innerHTML = `<div class="loading-list">No se encontraron resultados para "${filtroBusqueda}"</div>`;
+            return;
+        }
+
+        reportesFiltrados.forEach((item) => {
+            const indexOriginal = reportesGlobales.indexOf(item);
+            let fLista = item.fechaLista || item.fecha || "---";
+
+            let imgUrl = 'https://placehold.co/60x60/e0e0e0/888?text=NO+IMG';
+            if(item.foto && item.foto.includes('id=')) {
+                const id = item.foto.split('id=')[1].split('&')[0];
+                imgUrl = 'https://lh3.googleusercontent.com/d/' + id;
+            }
+
+            let numValor = 0;
+            if(item.valor) {
+                let strLimpio = item.valor.toString().replace(/[^0-9]/g, '');
+                numValor = strLimpio ? Number(strLimpio) : 0;
+            }
+            const valorFormateado = numValor.toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
+
+            contenedor.innerHTML += `
+                <div class="card" onclick="verDetalle(${indexOriginal}, 'entrar')">
+                    <div class="card-header">
+                        <span class="card-movil">${item.movil || '-'}</span>
+                        <span class="card-fecha">${fLista}</span>
+                    </div>
+                    <div class="card-body">
+                        <span class="card-price">${valorFormateado}</span>
+                        <span class="card-sede">${item.sede || '-'}</span>
+                    </div>
+                    <div class="card-footer">
+                        <span class="card-address">📍 ${item.direccion || 'Sin dirección'}</span>
+                        <img src="${imgUrl}" class="card-thumb" onerror="this.onerror=null; this.src='https://placehold.co/60x60/e0e0e0/888?text=IMG';">
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    function verDetalle(index, tipoAnimacion = 'swipe') {
+        if (index < 0 || index >= reportesGlobales.length) return;
+        
+        indiceActual = index;
+        const item = reportesGlobales[index];
+        const vista = document.getElementById('vistaDetalle');
+        const contenido = document.getElementById('contenidoDetalle');
+        
+        document.getElementById('bottomBar').style.display = 'none';
+        document.getElementById('cajaBuscador').style.display = 'none';
+
+        vista.classList.remove('anim-derecha', 'anim-izquierda');
+        contenido.classList.remove('anim-swipe');
+        void vista.offsetWidth; 
+        void contenido.offsetWidth; 
+        
+        let fFull = item.fechaDetalle || item.fechaLista || item.fecha || "---";
+        
+        document.getElementById('tituloDetalle').innerText = item.movil || 'Detalle';
+        
+        let numValorDetalle = 0;
+        if(item.valor) {
+            let strLimpioDetalle = item.valor.toString().replace(/[^0-9]/g, '');
+            numValorDetalle = strLimpioDetalle ? Number(strLimpioDetalle) : 0;
+        }
+        const valorCop = numValorDetalle.toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
+        
+        let imgUrl = '';
+        if(item.foto && item.foto.includes('id=')) {
+            const id = item.foto.split('id=')[1].split('&')[0];
+            imgUrl = 'https://lh3.googleusercontent.com/d/' + id; 
+        }
+
+        contenido.innerHTML = `
+            <div class="detalle-bloque">
+                <div class="detalle-fila">
+                    <span class="detalle-label">Fecha y Hora</span>
+                    <span class="detalle-valor">${fFull}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Farmanorte</span>
+                    <span class="detalle-valor">${item.sede || '-'}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Factura</span>
+                    <span class="detalle-valor">${item.factura || '-'}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Recogidas</span>
+                    <span class="detalle-valor">${item.recogidas || 'Ninguna'}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Dirección</span>
+                    <span class="detalle-valor">${item.direccion || '-'}</span>
+                </div>
+                <div class="detalle-fila">
+                    <span class="detalle-label">Valor Domicilio</span>
+                    <span class="detalle-valor destacado">${valorCop}</span>
+                </div>
+            </div>
+            <div class="detalle-foto-caja">
+                <span class="detalle-label" style="display:block;">Soporte Fotográfico</span>
+                <img src="${imgUrl}" class="detalle-foto" onclick="abrirZoom('${imgUrl}')" onerror="this.onerror=null; this.style.display='none';">
+            </div>
+        `;
+
+        document.getElementById('btnPrev').disabled = (index === 0);
+        document.getElementById('btnNext').disabled = (index === reportesGlobales.length - 1);
+
+        document.getElementById('vistaLista').style.display = 'none';
+        document.getElementById('vistaFormulario').style.display = 'none';
+        vista.style.display = 'block';
+
+        if(tipoAnimacion === 'entrar') {
+            vista.classList.add('anim-derecha');
+            window.scrollTo(0, 0); 
+        } else {
+            contenido.classList.add('anim-swipe');
+        }
+    }
+    
+    function anteriorReporte() { verDetalle(indiceActual - 1, 'swipe'); }
+    function siguienteReporte() { verDetalle(indiceActual + 1, 'swipe'); }
+
+    function configurarSwipe() {
+        const contenedor = document.getElementById('swipeContainer');
+        let touchstartX = 0; let touchendX = 0; const minSwipeDistance = 70; 
+
+        contenedor.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, false);
+        contenedor.addEventListener('touchend', e => { touchendX = e.changedTouches[0].screenX; manejarGesture(); }, false);
+
+        function manejarGesture() {
+            if (document.getElementById('modalZoom').style.display === 'flex') return;
+            const distancia = touchendX - touchstartX;
+            if (Math.abs(distancia) < minSwipeDistance) return; 
+            if (touchendX < touchstartX && indiceActual < reportesGlobales.length - 1) { siguienteReporte(); }
+            if (touchendX > touchstartX && indiceActual > 0) { anteriorReporte(); }
+        }
+    }
+
+    function abrirZoom(url) {
+        if(!url) return;
+        document.body.style.overflow = 'hidden'; 
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        document.getElementById('loadingText').innerText = "Abriendo original...";
+
+        const wrapper = document.getElementById('zoomWrapper');
+        wrapper.innerHTML = `<img id="fotoAmpliada" src="${url}">`;
+        
+        const img = document.getElementById('fotoAmpliada');
+        const modal = document.getElementById('modalZoom');
+
+        img.onload = () => {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            modal.style.display = 'block'; 
+
+            setTimeout(() => {
+                try {
+                    elPinch = panzoom(img, {
+                        maxZoom: 5,
+                        minZoom: 1,
+                        bounds: true,
+                        boundsPadding: 0.1,
+                        zoomDoubleClickSpeed: 1
+                    });
+                } catch(e) {
+                    console.error("Fallo la librería de zoom táctil", e);
+                }
+            }, 50);
+        };
+
+        img.onerror = () => {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            alert('No se pudo cargar la imagen original.');
+            cerrarZoom();
+        };
+    }
+    
+    function cerrarZoom() {
+        document.getElementById('modalZoom').style.display = 'none';
+        if (elPinch) {
+            elPinch.dispose(); 
+            elPinch = null;
+        }
+        document.getElementById('zoomWrapper').innerHTML = ''; 
+        document.body.style.overflow = '';
+    }
+
+    function zoomMas() {
+        if (elPinch) {
+            const transform = elPinch.getTransform();
+            elPinch.smoothZoomAbs(window.innerWidth / 2, window.innerHeight / 2, transform.scale * 1.5);
+        }
+    }
+
+    function zoomMenos() {
+        if (elPinch) {
+            const transform = elPinch.getTransform();
+            let nuevaEscala = transform.scale * 0.66;
+            if (nuevaEscala < 1) nuevaEscala = 1; 
+            elPinch.smoothZoomAbs(window.innerWidth / 2, window.innerHeight / 2, nuevaEscala);
+        }
+    }
+
+    function cerrarDetalle() {
+        const vistaLista = document.getElementById('vistaLista');
+        document.getElementById('vistaDetalle').style.display = 'none';
+        vistaLista.style.display = 'block';
+        document.getElementById('bottomBar').style.display = 'flex';
+        
+        if(document.getElementById('inputBuscador').value !== '') {
+            document.getElementById('cajaBuscador').style.display = 'block';
+        }
+
+        vistaLista.classList.remove('anim-izquierda', 'anim-derecha');
+        void vistaLista.offsetWidth; 
+        vistaLista.classList.add('anim-izquierda'); 
+        indiceActual = -1;
+    }
+
+    function mostrarLista() {
+        const vistaLista = document.getElementById('vistaLista');
+        document.getElementById('vistaFormulario').style.display = 'none';
+        document.getElementById('vistaDetalle').style.display = 'none';
+        vistaLista.style.display = 'block';
+        document.getElementById('bottomBar').style.display = 'flex';
+        
+        vistaLista.classList.remove('anim-izquierda');
+        void vistaLista.offsetWidth;
+        vistaLista.classList.add('anim-izquierda');
+    }
+
+    function mostrarFormulario() {
+        const vistaForm = document.getElementById('vistaFormulario');
+        document.getElementById('vistaLista').style.display = 'none';
+        document.getElementById('vistaDetalle').style.display = 'none';
+        vistaForm.style.display = 'block';
+        document.getElementById('bottomBar').style.display = 'none';
+        
+        vistaForm.classList.remove('anim-derecha');
+        void vistaForm.offsetWidth;
+        vistaForm.classList.add('anim-derecha');
+    }
+
+    document.getElementById('reporteForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const overlay = document.getElementById('loadingOverlay');
+        const btn = document.getElementById('btnEnviar');
+        
+        btn.disabled = true;
+        
+        overlay.innerHTML = `
+            <div class="spinner"></div>
+            <div id="loadingText">Subiendo reporte a base de datos...</div>
+        `;
+        overlay.style.display = 'flex';
+
+        const fileInput = document.getElementById('foto').files[0];
+        const reader = new FileReader();
+        
+        reader.readAsDataURL(fileInput);
+        reader.onload = function() {
+            const img = new Image();
+            img.src = reader.result;
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 1000;
+                let width = img.width; let height = img.height;
+
+                if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                canvas.width = width; canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                const dataUrlComprimida = canvas.toDataURL('image/jpeg', 0.7); 
+
+                const datos = {
+                    movil: document.getElementById('movil').value,
+                    sede: document.getElementById('sede').value,
+                    recogidas: document.getElementById('recogidas').value || 'N/A',
+                    factura: document.getElementById('factura').value,
+                    valor: document.getElementById('valor').value,
+                    direccion: document.getElementById('direccion').value,
+                    imagen: dataUrlComprimida
+                };
+
+                fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(datos)
+                }).then(() => {
+                    // Chulito visual de confirmación operativa
+                    overlay.innerHTML = `
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--verde)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 15px; animation: fadeSwipe 0.3s ease-out;">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <div id="loadingText" style="font-size: 16px;">¡Reporte enviado!</div>
+                    `;
+                    
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                        document.getElementById('reporteForm').reset();
+                        btn.disabled = false;
+                        
+                        // FORZAR REGRESO TÁCTICO A PESTAÑA "HOY"
+                        pestanaActiva = 'recientes';
+                        document.getElementById('btnTabRecientes').classList.add('active');
+                        document.getElementById('btnTabHistorial').classList.remove('active');
+                        document.getElementById('tituloVista').innerHTML = 'Servimoto<span class="dot">•</span><span>HOY</span>';
+                        
+                        // Limpieza del buscador (Error de sintaxis corregido aquí)
+                        if(document.getElementById('cajaBuscador')) {
+                            document.getElementById('cajaBuscador').style.display = 'none';
+                        }
+                        if(document.getElementById('inputBuscador')) {
+                            document.getElementById('inputBuscador').value = '';
+                        }
+                        
+                        mostrarLista();   // Regresa a la vista de tarjetas
+                        descargarDatos(); // Sincroniza la base de datos
+                    }, 1200);
+                }).catch(err => {
+                    overlay.style.display = 'none';
+                    alert('Error de red al enviar. Revise sus datos.');
+                    btn.disabled = false;
+                    console.error(err);
+                });
+            }
+        };
+    });
+</script>
+</body>
+</html>
