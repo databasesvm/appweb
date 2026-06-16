@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta name="theme-color" content="#00a650">
     <title>Servimoto - FN</title>
+    <!-- Preconexión anticipada a los servidores de Google — reduce ~150ms en la primera carga -->
+    <link rel="preconnect" href="https://script.google.com">
+    <link rel="preconnect" href="https://lh3.googleusercontent.com">
+    <link rel="dns-prefetch" href="https://lh3.googleusercontent.com">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L93 25 L93 75 L50 95 L7 75 L7 25 Z' fill='%23121212' stroke='%233AF500' stroke-width='8'/%3E%3Cpath d='M55 20 L30 55 L55 55 L45 80 L75 45 L50 45 Z' fill='%23e6b800'/%3E%3C/svg%3E">
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 L93 25 L93 75 L50 95 L7 75 L7 25 Z' fill='%23121212' stroke='%233AF500' stroke-width='8'/%3E%3Cpath d='M55 20 L30 55 L55 55 L45 80 L75 45 L50 45 Z' fill='%23e6b800'/%3E%3C/svg%3E">
 
@@ -28,8 +33,8 @@
         
         .header button.icon-btn { background: var(--gris-fondo); border: none; font-size: 20px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
         .header button.icon-btn:active { background: #e0e0e0; }
-        .header button.icon-btn svg { transition: transform 0.4s ease; }
-        .header button.icon-btn.girando svg { transform: rotate(360deg); }
+        @keyframes syncSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .header button.icon-btn.girando svg { animation: syncSpin 0.5s ease-out; }
 
         /* BUSCADOR UNIVERSAL TÁCTICO */
         .search-container { 
@@ -384,7 +389,7 @@
                     </select>
 
                     <label>RECOGIDAS / COMPRAS</label>
-                    <input type="text" id="recogidas" placeholder="Ej: FN82, Compra en Farmatodo, Farmazur..." required>
+                    <input type="text" id="recogidas" placeholder="Ej: FN01 La Sabana, FN03 Prados..." required>
                     <button type="button" class="btn-no-aplica" id="btnNoAplica" onclick="setNoAplica()">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         SIN RECOGIDAS
@@ -437,7 +442,7 @@
         <div id="loadingText">Procesando...</div>
     </div>
 
-<script src="https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js"></script>
+<script src="https://unpkg.com/panzoom@9.4.0/dist/panzoom.min.js" defer></script>
 
 <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx0X01UtWvlZnIZaMltkSoeOovj4m_Fi_HfLlM-K1oMEbZ9DIe-kInUZ73dxPQfNxe88w/exec";
@@ -458,15 +463,20 @@
             .replace(/'/g, '&#039;');
     }
 
-    // EXTRACCIÓN ROBUSTA DE ID DE GOOGLE DRIVE: maneja ambos formatos de URL
+    // EXTRACCIÓN ROBUSTA DE ID DE GOOGLE DRIVE: maneja todos los formatos conocidos
     function extraerIdDrive(url) {
         if (!url) return null;
         // Formato moderno: drive.google.com/file/d/FILE_ID/view
         const matchD = url.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
         if (matchD) return matchD[1];
-        // Formato clásico: drive.google.com/open?id=FILE_ID
+        // Formato clásico: drive.google.com/open?id=FILE_ID o &id=FILE_ID
         const matchId = url.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
         if (matchId) return matchId[1];
+        // Fallback compatible con el código original: cualquier id= en la URL
+        if (url.includes('id=')) {
+            const parte = url.split('id=')[1];
+            if (parte) return parte.split('&')[0];
+        }
         return null;
     }
 
@@ -638,15 +648,18 @@
         // OPTIMIZACIÓN DE RENDIMIENTO: Armamos todo el bloque de una vez para que la app no se cuelgue repintando
         let htmlTarjetas = '';
 
+        // SVG local en base64 — elimina peticiones externas a placehold.co
+        const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' rx='8' fill='%23e8eaed'/%3E%3Crect x='14' y='16' width='32' height='28' rx='3' fill='none' stroke='%23aaa' stroke-width='2'/%3E%3Ccircle cx='23' cy='26' r='4' fill='none' stroke='%23aaa' stroke-width='2'/%3E%3Cpolyline points='14,44 26,32 34,40 40,34 46,44' fill='none' stroke='%23aaa' stroke-width='2'/%3E%3C/svg%3E";
+
+        // Pre-índice O(N): un Map item→índice construido una sola vez fuera del loop
+        const mapaIndices = new Map(reportesGlobales.map((item, i) => [item, i]));
+
         reportesFiltrados.forEach((item) => {
-            const indexOriginal = reportesGlobales.indexOf(item);
+            const indexOriginal = mapaIndices.get(item);
             let fLista = item.fechaLista || item.fecha || "---";
 
-            let imgUrl = 'https://placehold.co/60x60/e0e0e0/888?text=NO+IMG';
             const driveId = extraerIdDrive(item.foto);
-            if (driveId) {
-                imgUrl = 'https://lh3.googleusercontent.com/d/' + driveId;
-            }
+            const imgUrl = driveId ? 'https://lh3.googleusercontent.com/d/' + driveId : PLACEHOLDER_IMG;
 
             let numValor = 0;
             if(item.valor) {
@@ -672,7 +685,7 @@
                     </div>
                     <div class="card-footer">
                         <span class="card-address">📍 ${sanitizar(item.direccion || 'Sin dirección')}</span>
-                        <img src="${imgUrl}" class="card-thumb" onerror="this.onerror=null; this.src='https://placehold.co/60x60/e0e0e0/888?text=IMG';">
+                        <img src="${imgUrl}" class="card-thumb" loading="lazy" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}';">
                     </div>
                 </div>
             `;
