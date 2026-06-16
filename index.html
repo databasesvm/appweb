@@ -41,6 +41,7 @@
         }
         .search-input { 
             width: 100%; 
+            box-sizing: border-box;
             padding: 12px 15px; 
             border: 1.5px solid var(--borde); 
             border-radius: 10px; 
@@ -51,6 +52,35 @@
             outline: none; 
             transition: all 0.2s ease;
         }
+
+        /* BOTÓN RÁPIDO NO APLICA */
+        .btn-no-aplica { 
+            background: var(--negro); 
+            color: var(--dorado); 
+            border: none; 
+            padding: 11px 18px; 
+            border-radius: 10px; 
+            font-size: 13px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            margin-top: 8px; 
+            width: 100%; 
+            letter-spacing: 0.5px; 
+            transition: all 0.2s ease; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 6px; 
+        }
+        .btn-no-aplica:active { opacity: 0.8; transform: scale(0.98); }
+        .btn-no-aplica.seleccionado { background: var(--verde); color: var(--blanco); }
+
+        /* PLACEHOLDER SIN FOTO EN DETALLE */
+        .detalle-sin-foto { 
+            display: flex; flex-direction: column; align-items: center; 
+            padding: 30px 20px; color: #ccc; gap: 8px; 
+        }
+        .detalle-sin-foto span { font-size: 13px; font-weight: 500; color: #bbb; }
         .search-input:focus { 
             border-color: var(--verde); 
             background-color: var(--blanco);
@@ -206,7 +236,7 @@
             </div>
         </div>
         <div class="search-container" id="cajaBuscador">
-            <input type="text" id="inputBuscador" class="search-input" placeholder="Buscar móvil, sede, factura..." onkeyup="filtrarEnVivo()">
+            <input type="text" id="inputBuscador" class="search-input" placeholder="Buscar móvil, sede, factura..." oninput="filtrarDebounced()">
         </div>
 
         <div id="contenedorLista" class="list-container">
@@ -327,7 +357,7 @@
                         <option value="FN25">FN25 Pinar del Rio</option>
                         <option value="FN27">FN27 Prados del Este</option>
                         <option value="FN30">FN30 Por la 10 Los Patios</option>
-                        <option value="FN31">FN31 </option>
+                        <option value="FN31">FN31</option>
                         <option value="FN32">FN32 Parque del Rosario</option>
                         <option value="FN33">FN33 La Playa</option>
                         <option value="FN34">FN34 Calle 13 Caobos</option>
@@ -354,13 +384,17 @@
                     </select>
 
                     <label>RECOGIDAS / COMPRAS</label>
-                    <input type="text" id="recogidas" placeholder="Detalle (Opcional)">
+                    <input type="text" id="recogidas" placeholder="Ej: FN82, Compra en Farmatodo, Farmazur..." required>
+                    <button type="button" class="btn-no-aplica" id="btnNoAplica" onclick="setNoAplica()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        SIN RECOGIDAS
+                    </button>
 
                     <label>NRO. FACTURA</label>
-                    <input type="text" id="factura" placeholder="Ej: 123456" required>
+                    <input type="text" id="factura" placeholder="Ej: 123456" required autocomplete="off" inputmode="numeric" maxlength="6">
 
                     <label>VALOR DOMICILIO ($)</label>
-                    <input type="number" id="valor" placeholder="Ej: 4000, 5000..." min="4000" step="1000" required>
+                    <input type="number" id="valor" placeholder="Ej: 4000, 5000..." min="4000" step="1000" required inputmode="numeric">
 
                     <label>DIRECCIÓN EXACTA</label>
                     <input type="text" id="direccion" placeholder="Dirección de entrega" required>
@@ -413,10 +447,63 @@
     let pestanaActiva = 'recientes'; 
     let elPinch = null;
 
+    // SANITIZACIÓN XSS: protege contra HTML malicioso inyectado desde la API
+    function sanitizar(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    // EXTRACCIÓN ROBUSTA DE ID DE GOOGLE DRIVE: maneja ambos formatos de URL
+    function extraerIdDrive(url) {
+        if (!url) return null;
+        // Formato moderno: drive.google.com/file/d/FILE_ID/view
+        const matchD = url.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
+        if (matchD) return matchD[1];
+        // Formato clásico: drive.google.com/open?id=FILE_ID
+        const matchId = url.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
+        if (matchId) return matchId[1];
+        return null;
+    }
+
+    // DEBOUNCE: evita recalcular la búsqueda con cada pulsación de tecla
+    function debounce(fn, delay) {
+        let timer;
+        return function(...args) { clearTimeout(timer); timer = setTimeout(() => fn.apply(this, args), delay); };
+    }
+    const filtrarDebounced = debounce(filtrarEnVivo, 220);
+
+    // BOTÓN NO APLICA para campo Recogidas
+    function setNoAplica() {
+        const campo = document.getElementById('recogidas');
+        const btn = document.getElementById('btnNoAplica');
+        campo.value = 'Sin recogidas';
+        btn.classList.add('seleccionado');
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> SELECCIONADO`;
+    }
+
     // Ignición táctica: arranca apenas la pantalla carga, sin esperar librerías externas
     document.addEventListener("DOMContentLoaded", () => {
         descargarDatos();
-        configurarSwipe(); 
+        configurarSwipe();
+        
+        // ESCAPE cierra el zoom modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('modalZoom').style.display !== 'none') {
+                cerrarZoom();
+            }
+        });
+        
+        // Reset visual del botón NO APLICA cuando el usuario escribe manualmente
+        document.getElementById('recogidas').addEventListener('input', function() {
+            const btn = document.getElementById('btnNoAplica');
+            btn.classList.remove('seleccionado');
+            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> SIN RECOGIDAS`;
+        });
     });
 
     function descargarDatos() {
@@ -478,7 +565,11 @@
             })
             .catch(err => {
                 clearInterval(rotador); 
-                contenedor.innerHTML = '<div class="loading-list" style="color:red;">Error de conexión. Revise la señal.</div>';
+                contenedor.innerHTML = `
+                    <div class="loading-list" style="color:red;">
+                        <div style="font-size:16px; margin-bottom:12px;">⚠️ Sin señal. No se pudo cargar.</div>
+                        <button onclick="descargarDatos()" style="background:var(--verde);color:#fff;border:none;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">↺ Reintentar</button>
+                    </div>`;
                 console.error(err);
             });
     }
@@ -552,9 +643,9 @@
             let fLista = item.fechaLista || item.fecha || "---";
 
             let imgUrl = 'https://placehold.co/60x60/e0e0e0/888?text=NO+IMG';
-            if(item.foto && item.foto.includes('id=')) {
-                const id = item.foto.split('id=')[1].split('&')[0];
-                imgUrl = 'https://lh3.googleusercontent.com/d/' + id;
+            const driveId = extraerIdDrive(item.foto);
+            if (driveId) {
+                imgUrl = 'https://lh3.googleusercontent.com/d/' + driveId;
             }
 
             let numValor = 0;
@@ -564,18 +655,23 @@
             }
             const valorFormateado = numValor.toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
 
+            const facturaMostrada = item.factura ? `<span style="font-size:11px;color:#888;font-weight:600;background:var(--gris-fondo);padding:3px 8px;border-radius:20px;"># ${sanitizar(item.factura)}</span>` : '';
+
             htmlTarjetas += `
                 <div class="card" onclick="verDetalle(${indexOriginal}, 'entrar')">
                     <div class="card-header">
-                        <span class="card-movil">${item.movil || '-'}</span>
-                        <span class="card-fecha">${fLista}</span>
+                        <div style="display:flex;align-items:center;gap:7px;min-width:0;">
+                            <span class="card-movil">${sanitizar(item.movil || '-')}</span>
+                            ${facturaMostrada}
+                        </div>
+                        <span class="card-fecha" style="flex-shrink:0;margin-left:8px;">${sanitizar(fLista)}</span>
                     </div>
                     <div class="card-body">
                         <span class="card-price">${valorFormateado}</span>
-                        <span class="card-sede">${item.sede || '-'}</span>
+                        <span class="card-sede">${sanitizar(item.sede || '-')}</span>
                     </div>
                     <div class="card-footer">
-                        <span class="card-address">📍 ${item.direccion || 'Sin dirección'}</span>
+                        <span class="card-address">📍 ${sanitizar(item.direccion || 'Sin dirección')}</span>
                         <img src="${imgUrl}" class="card-thumb" onerror="this.onerror=null; this.src='https://placehold.co/60x60/e0e0e0/888?text=IMG';">
                     </div>
                 </div>
@@ -613,33 +709,34 @@
         }
         const valorCop = numValorDetalle.toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
         
-        let imgUrl = '';
-        if(item.foto && item.foto.includes('id=')) {
-            const id = item.foto.split('id=')[1].split('&')[0];
-            imgUrl = 'https://lh3.googleusercontent.com/d/' + id; 
-        }
+        const driveIdDetalle = extraerIdDrive(item.foto);
+        const imgUrl = driveIdDetalle ? 'https://lh3.googleusercontent.com/d/' + driveIdDetalle : '';
+
+        const bloqueImagen = imgUrl
+            ? `<img src="${imgUrl}" class="detalle-foto" onclick="abrirZoom('${imgUrl}')" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'detalle-sin-foto\\'><svg width=\\'48\\' height=\\'48\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'></rect><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'></circle><polyline points=\\'21 15 16 10 5 21\\'></polyline></svg><span>Foto no disponible</span></div>';">`
+            : `<div class="detalle-sin-foto"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg><span>Sin foto registrada</span></div>`;
 
         contenido.innerHTML = `
             <div class="detalle-bloque">
                 <div class="detalle-fila">
                     <span class="detalle-label">Fecha y Hora</span>
-                    <span class="detalle-valor">${fFull}</span>
+                    <span class="detalle-valor">${sanitizar(fFull)}</span>
                 </div>
                 <div class="detalle-fila">
                     <span class="detalle-label">Farmanorte</span>
-                    <span class="detalle-valor">${item.sede || '-'}</span>
+                    <span class="detalle-valor">${sanitizar(item.sede || '-')}</span>
                 </div>
                 <div class="detalle-fila">
                     <span class="detalle-label">Factura</span>
-                    <span class="detalle-valor">${item.factura || '-'}</span>
+                    <span class="detalle-valor">${sanitizar(item.factura || '-')}</span>
                 </div>
                 <div class="detalle-fila">
                     <span class="detalle-label">Recogidas</span>
-                    <span class="detalle-valor">${item.recogidas || 'Ninguna'}</span>
+                    <span class="detalle-valor">${sanitizar(item.recogidas || 'Ninguna')}</span>
                 </div>
                 <div class="detalle-fila">
                     <span class="detalle-label">Dirección</span>
-                    <span class="detalle-valor">${item.direccion || '-'}</span>
+                    <span class="detalle-valor">${sanitizar(item.direccion || '-')}</span>
                 </div>
                 <div class="detalle-fila">
                     <span class="detalle-label">Valor Domicilio</span>
@@ -648,7 +745,7 @@
             </div>
             <div class="detalle-foto-caja">
                 <span class="detalle-label" style="display:block;">Soporte Fotográfico</span>
-                <img src="${imgUrl}" class="detalle-foto" onclick="abrirZoom('${imgUrl}')" onerror="this.onerror=null; this.style.display='none';">
+                ${bloqueImagen}
             </div>
         `;
 
@@ -678,7 +775,8 @@
         contenedor.addEventListener('touchend', e => { touchendX = e.changedTouches[0].screenX; manejarGesture(); }, false);
 
         function manejarGesture() {
-            if (document.getElementById('modalZoom').style.display === 'flex') return;
+            if (document.getElementById('modalZoom').style.display !== 'none' && 
+                document.getElementById('modalZoom').style.display !== '') return;
             const distancia = touchendX - touchstartX;
             if (Math.abs(distancia) < minSwipeDistance) return; 
             if (touchendX < touchstartX && indiceActual < reportesGlobales.length - 1) { siguienteReporte(); }
@@ -812,20 +910,56 @@
         
         btn.disabled = true;
         
+        // VALIDACIÓN CRÍTICA: la foto es obligatoria, sin excepción
+        const fileInput = document.getElementById('foto').files[0];
+        if (!fileInput) {
+            alert("📷 Debes tomar o seleccionar una foto del soporte antes de enviar.");
+            document.getElementById('foto').focus();
+            btn.disabled = false;
+            return;
+        }
+        
         overlay.innerHTML = `
             <div class="spinner"></div>
-            <div id="loadingText">Subiendo reporte a base de datos...</div>
+            <div id="loadingText">Procesando foto...</div>
         `;
         overlay.style.display = 'flex';
 
-        const fileInput = document.getElementById('foto').files[0];
         const reader = new FileReader();
+        
+        // ERROR AL LEER EL ARCHIVO — permite reintentar
+        reader.onerror = function() {
+            overlay.innerHTML = `
+                <div style="text-align:center; padding:20px;">
+                    <div style="font-size:48px; margin-bottom:12px;">📷</div>
+                    <div style="font-size:16px; font-weight:700; color:var(--negro); margin-bottom:8px;">Error al leer la foto</div>
+                    <div style="font-size:14px; color:#888; margin-bottom:20px;">El archivo no se pudo leer correctamente.</div>
+                    <button onclick="reintentarFoto()" style="background:var(--verde);color:#fff;border:none;padding:14px 30px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;width:100%;max-width:260px;">📷 Tomar foto de nuevo</button>
+                </div>
+            `;
+            btn.disabled = false;
+        };
         
         reader.readAsDataURL(fileInput);
         reader.onload = function() {
             const img = new Image();
             img.src = reader.result;
+            
+            // ERROR DE IMAGEN CORRUPTA — permite reintentar
+            img.onerror = function() {
+                overlay.innerHTML = `
+                    <div style="text-align:center; padding:20px;">
+                        <div style="font-size:48px; margin-bottom:12px;">🖼️</div>
+                        <div style="font-size:16px; font-weight:700; color:var(--negro); margin-bottom:8px;">Imagen inválida</div>
+                        <div style="font-size:14px; color:#888; margin-bottom:20px;">El archivo seleccionado no es una imagen válida.</div>
+                        <button onclick="reintentarFoto()" style="background:var(--verde);color:#fff;border:none;padding:14px 30px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;width:100%;max-width:260px;">📷 Tomar foto de nuevo</button>
+                    </div>
+                `;
+                btn.disabled = false;
+            };
+            
             img.onload = function() {
+                document.getElementById('loadingText').innerText = 'Comprimiendo imagen...';
                 const canvas = document.createElement('canvas');
                 const MAX_WIDTH = 1000;
                 let width = img.width; let height = img.height;
@@ -836,11 +970,12 @@
                 ctx.drawImage(img, 0, 0, width, height);
                 
                 const dataUrlComprimida = canvas.toDataURL('image/jpeg', 0.7); 
+                document.getElementById('loadingText').innerText = 'Subiendo reporte a base de datos...';
 
                 const datos = {
                     movil: document.getElementById('movil').value,
                     sede: document.getElementById('sede').value,
-                    recogidas: document.getElementById('recogidas').value || 'N/A',
+                    recogidas: document.getElementById('recogidas').value,
                     factura: document.getElementById('factura').value,
                     valor: document.getElementById('valor').value,
                     direccion: document.getElementById('direccion').value,
@@ -867,6 +1002,13 @@
                         document.getElementById('reporteForm').reset();
                         btn.disabled = false;
                         
+                        // Reset visual del botón NO APLICA
+                        const btnNoAplica = document.getElementById('btnNoAplica');
+                        if (btnNoAplica) {
+                            btnNoAplica.classList.remove('seleccionado');
+                            btnNoAplica.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> SIN RECOGIDAS`;
+                        }
+                        
                         // FORZAR REGRESO TÁCTICO A PESTAÑA "HOY"
                         pestanaActiva = 'recientes';
                         document.getElementById('btnTabRecientes').classList.add('active');
@@ -890,9 +1032,18 @@
                     btn.disabled = false;
                     console.error(err);
                 });
-            }
-        };
-    });
+            }; // fin img.onload
+        }; // fin reader.onload
+    }); // fin submit
+
+    // REINTENTAR FOTO: limpia el input y abre la cámara de nuevo
+    function reintentarFoto() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+        document.getElementById('btnEnviar').disabled = false;
+        const fotoInput = document.getElementById('foto');
+        fotoInput.value = '';
+        fotoInput.click();
+    }
 </script>
 </body>
 </html>
