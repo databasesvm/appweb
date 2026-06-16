@@ -82,7 +82,7 @@
         /* PLACEHOLDER SIN FOTO EN DETALLE */
         .detalle-sin-foto { 
             display: flex; flex-direction: column; align-items: center; 
-            padding: 30px 20px; color: #ccc; gap: 8px; background: #fafafa; border-radius:12px; margin-top:10px;
+            padding: 30px 20px; color: #ccc; gap: 8px; 
         }
         .detalle-sin-foto span { font-size: 13px; font-weight: 500; color: #bbb; }
         .search-input:focus { 
@@ -91,26 +91,44 @@
             box-shadow: 0 0 0 3px rgba(0, 166, 80, 0.1);
         }
 
-        /* HEADER DETALLE / FORMULARIO */
+        /* HEADER DETALLE / FORMULARIO (Fondo Verde) */
         .header-detalle { background-color: var(--verde); color: var(--blanco); }
         
         /* BOTÓN TÁCTICO DE RETROCESO */
         .header-detalle .btn-volver-flecha { 
-            background: var(--gris-fondo); border: none; color: var(--verde); 
-            width: 42px; height: 42px; border-radius: 50%; display: flex; 
-            align-items: center; justify-content: center; cursor: pointer; 
-            transition: all 0.2s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            background: var(--gris-fondo); 
+            border: none; 
+            color: var(--verde); 
+            width: 42px; 
+            height: 42px; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
-        .header-detalle .btn-volver-flecha:active { background: rgba(0, 0, 0, 0.2); transform: scale(0.92); }
+        .header-detalle .btn-volver-flecha:active { 
+            background: rgba(0, 0, 0, 0.2); 
+            transform: scale(0.92); 
+        }
 
-        /* EL TAG DEL MÓVIL */
+        /* EL TAG DEL MÓVIL (Fondo negro, letras doradas) */
         .header-detalle #tituloDetalle { 
-            display: inline-block; background: var(--negro); color: var(--dorado); 
-            font-size: 12px; font-weight: bold; padding: 6px 12px; border-radius: 20px;
-            text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: inline-block; 
+            background: var(--negro); 
+            color: var(--dorado); 
+            font-size: 12px;
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-transform: uppercase; 
+            letter-spacing: 0.5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        /* CONTENEDOR DE LISTA */
+        /* CONTENEDOR DE LISTA (CARDS) */
         .list-container { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
         
         .card { background: var(--blanco); border-radius: 16px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 12px; cursor: pointer; transition: transform 0.1s; position: relative; overflow: hidden; }
@@ -127,9 +145,7 @@
 
         .card-footer { display: flex; justify-content: space-between; align-items: center; background: var(--gris-fondo); padding: 10px 12px; border-radius: 10px; margin-top: 4px; }
         .card-address { font-size: 13px; color: var(--negro); font-weight: 500; display: flex; align-items: center; gap: 5px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        /* MINIATURAS: Unificadas para imagen y bloque de texto */
-        .card-thumb { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; border: 2px solid var(--blanco); box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-left: 10px; flex-shrink: 0; box-sizing: border-box; }
+        .card-thumb { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; border: 2px solid var(--blanco); box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-left: 10px; flex-shrink: 0; }
 
         /* VISTA DETALLE LIMPIA */
         #vistaDetalle { display: none; background: var(--gris-fondo); min-height: 100vh; position: relative; width: 100%; }
@@ -175,7 +191,7 @@
         .btn-enviar:active { background-color: #008f45; transform: scale(0.98); }
         .btn-enviar:disabled { background-color: #cccccc; box-shadow: none; cursor: not-allowed; }
         
-        /* MODAL Y LOADING */
+        /* MODAL Y LOADING (ZOOM DEFINITIVO) */
         #modalZoom { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; overflow: hidden; }
         .zoom-wrapper { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; touch-action: none; }
         #fotoAmpliada { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: 0 0; }
@@ -436,53 +452,48 @@
     let pestanaActiva = 'recientes'; 
     let elPinch = null;
 
-    // FUNCIONES GLOBALES DE RESCATE (Reemplazan la imagen rota por bloques de contención limpios)
-    window.falloMiniatura = function(img) {
-        const div = document.createElement('div');
-        div.className = 'card-thumb';
-        div.style.cssText = 'background:#f0f2f5; color:#888; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:bold; text-align:center; line-height:1; letter-spacing:-0.5px;';
-        div.innerText = 'AppSheet';
-        img.parentNode.replaceChild(div, img);
-    };
-
-    window.falloDetalle = function(img) {
-        const div = document.createElement('div');
-        div.className = 'detalle-sin-foto';
-        div.innerHTML = '<div style="font-size:30px; margin-bottom:10px;">⚠️</div><span>Foto de AppSheet</span>';
-        img.parentNode.replaceChild(div, img);
-    };
-
     // SANITIZACIÓN XSS
     function sanitizar(str) {
         if (str === null || str === undefined) return '';
-        return String(str).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"').replace(/'/g, '');
+        return String(str)
+            .replace(/&/g, '&')
+            .replace(/</g, '<')
+            .replace(/>/g, '>')
+            .replace(/"/g, '"')
+            .replace(/'/g, '');
     }
 
-    // DOCTRINA DE FOTOS: ESCÁNER Y CLASIFICADOR DEFINITIVO
-    function procesarSoporte(urlOriginal) {
-        if (!urlOriginal) return { origen: 'vacio' };
+    // EL ESCÁNER MATEMÁTICO BLINDADO
+    function extraerIdDrive(url) {
+        if (!url) return null;
+        let str = String(url);
+        let id = null;
         
-        const urlStr = String(urlOriginal);
-        
-        // 1. Detectar munición nueva (Web App - Drive)
-        if (urlStr.includes('drive.google.com') && urlStr.includes('id=')) {
-            const match = urlStr.match(/id=([a-zA-Z0-9_-]+)/);
-            if (match && match[1]) {
-                const id = match[1];
-                return {
-                    origen: 'drive',
-                    miniatura: `https://drive.google.com/thumbnail?id=${id}&sz=w100`,
-                    original: `https://drive.google.com/uc?export=view&id=${id}`
-                };
+        // Intentar pescar un ID de cualquier formato conocido
+        const matchD = str.match(/\/d\/([a-zA-Z0-9_-]{15,})/);
+        if (matchD) {
+            id = matchD[1];
+        } else {
+            const matchId = str.match(/[?&]id=([^&]+)/);
+            if (matchId) {
+                id = matchId[1];
+            } else if (str.includes('id=')) {
+                id = str.split('id=')[1].split('&')[0];
             }
         }
-        
-        // 2. Si no pasó el filtro de Drive arriba, asumimos que es vieja (AppSheet)
-        if (urlStr.includes('DATA_BASE_Images') || !urlStr.includes('http')) {
-            return { origen: 'appsheet' };
+
+        // Si el enlace no tiene 'id=', y tiene palabras de AppSheet, reportarlo
+        if (!id) {
+            if (str.includes('DATA_BASE') || str.includes('.jpg') || str.includes(' ')) return "APPSHEET";
+            return null;
         }
-        
-        return { origen: 'desconocido' };
+
+        // EL FILTRO TÁCTICO: Si el supuesto ID tiene basura (. , / , espacios, %20), es AppSheet disfrazado
+        if (id.includes('.') || id.includes(' ') || id.includes('/') || id.includes('%') || id.length < 15) {
+            return "APPSHEET";
+        }
+
+        return id;
     }
 
     // DEBOUNCE
@@ -530,9 +541,16 @@
 
         let textosCarga = [];
         if (pestanaActiva === 'recientes') {
-            textosCarga = ["Sincronizando con Servimoto...", "Cargando datos de Hoy..."];
+            textosCarga = [
+                "Sincronizando con Servimoto...",
+                "Cargando datos de Hoy..."
+            ];
         } else {
-            textosCarga = ["Sincronizando con Servimoto...", "El 60 esta Serca...", "El 63 es Cacorro..."];
+            textosCarga = [
+                "Sincronizando con Servimoto...",
+                "El 60 esta Serca...",
+                "El 63 es Cacorro..."
+            ];
         }
 
         let paso = 0;
@@ -562,7 +580,9 @@
             .then(res => res.json())
             .then(data => {
                 clearInterval(rotador); 
-                if (!Array.isArray(data)) { data = []; }
+                if (!Array.isArray(data)) {
+                    data = [];
+                }
                 reportesGlobales = data; 
                 renderizarLista();
             })
@@ -639,22 +659,24 @@
         }
 
         let htmlTarjetas = '';
+
+        const PLACEHOLDER_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' rx='8' fill='%23e8eaed'/%3E%3Crect x='14' y='16' width='32' height='28' rx='3' fill='none' stroke='%23aaa' stroke-width='2'/%3E%3Ccircle cx='23' cy='26' r='4' fill='none' stroke='%23aaa' stroke-width='2'/%3E%3Cpolyline points='14,44 26,32 34,40 40,34 46,44' fill='none' stroke='%23aaa' stroke-width='2'/%3E%3C/svg%3E";
+        const APPSHEET_IMG = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Crect width='60' height='60' rx='8' fill='%23121212'/%3E%3Ctext x='30' y='34' font-family='Arial' font-size='10' font-weight='bold' fill='%23e6b800' text-anchor='middle'%3EAppSheet%3C/text%3E%3C/svg%3E";
+
         const mapaIndices = new Map(reportesGlobales.map((item, i) => [item, i]));
 
         reportesFiltrados.forEach((item) => {
             const indexOriginal = mapaIndices.get(item);
             let fLista = item.fechaLista || item.fecha || "---";
 
-            // PROCESAMIENTO TÁCTICO DE LA MINIATURA
-            const fotoData = procesarSoporte(item.foto);
-            let bloqueMiniatura = '';
+            // LOGICA DE INTERCEPTACIÓN APLICADA CON EL NUEVO ESCÁNER
+            let imgUrl = PLACEHOLDER_IMG;
+            const analisisId = extraerIdDrive(item.foto);
 
-            if (fotoData.origen === 'appsheet') {
-                bloqueMiniatura = `<div class="card-thumb" style="background:#121212; color:#e6b800; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:900; line-height:1.2; text-align:center;">APP<br>OLD</div>`;
-            } else if (fotoData.origen === 'drive') {
-                bloqueMiniatura = `<img src="${fotoData.miniatura}" class="card-thumb" loading="lazy" onerror="falloMiniatura(this)">`;
-            } else {
-                bloqueMiniatura = `<div class="card-thumb" style="background:#e8eaed; color:#aaa; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold;">S/F</div>`;
+            if (analisisId === "APPSHEET") {
+                imgUrl = APPSHEET_IMG;
+            } else if (analisisId) {
+                imgUrl = 'https://lh3.googleusercontent.com/d/' + analisisId;
             }
 
             let numValor = 0;
@@ -681,7 +703,7 @@
                     </div>
                     <div class="card-footer">
                         <span class="card-address">📍 ${sanitizar(item.direccion || 'Sin dirección')}</span>
-                        ${bloqueMiniatura}
+                        <img src="${imgUrl}" class="card-thumb" loading="lazy" onerror="this.onerror=null; this.src='${PLACEHOLDER_IMG}';">
                     </div>
                 </div>
             `;
@@ -707,6 +729,7 @@
         void contenido.offsetWidth; 
         
         let fFull = item.fechaDetalle || item.fechaLista || item.fecha || "---";
+        
         document.getElementById('tituloDetalle').innerText = item.movil || 'Detalle';
         
         let numValorDetalle = 0;
@@ -716,16 +739,15 @@
         }
         const valorCop = numValorDetalle.toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
         
-        // PROCESAMIENTO TÁCTICO DE FOTO EN EL DETALLE
-        const fotoDataDetalle = procesarSoporte(item.foto);
-        let bloqueImagenDetalle = '';
+        // LOGICA DE INTERCEPTACIÓN APLICADA CON EL NUEVO ESCÁNER
+        let bloqueImagen = `<div class="detalle-sin-foto"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg><span>Sin foto registrada</span></div>`;
+        const analisisIdDetalle = extraerIdDrive(item.foto);
 
-        if (fotoDataDetalle.origen === 'appsheet') {
-            bloqueImagenDetalle = `<div style="background:var(--gris-fondo); border:2px dashed var(--dorado); color:var(--negro); padding:15px; border-radius:10px; text-align:center; margin-top:10px;"><div style="font-weight:900; font-size:14px; margin-bottom:5px;">⚠️ SOPORTE EN APPSHEET</div><div style="font-size:12px; color:var(--gris-oscuro);">Esta foto fue subida con la app antigua.<br>Solo se puede visualizar desde la central.</div></div>`;
-        } else if (fotoDataDetalle.origen === 'drive') {
-            bloqueImagenDetalle = `<img src="${fotoDataDetalle.original}" class="detalle-foto" onclick="abrirZoom('${fotoDataDetalle.original}')" onerror="falloDetalle(this)">`;
-        } else {
-            bloqueImagenDetalle = `<div class="detalle-sin-foto"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg><span>Sin foto registrada</span></div>`;
+        if (analisisIdDetalle === "APPSHEET") {
+            bloqueImagen = `<div style="background:var(--gris-fondo); border:2px dashed var(--dorado); color:var(--negro); padding:15px; border-radius:10px; text-align:center; margin-top:10px;"><div style="font-weight:900; font-size:14px; margin-bottom:5px;">⚠️ SOPORTE EN APPSHEET</div><div style="font-size:12px; color:var(--gris-oscuro);">Esta foto fue subida con la app antigua.<br>Solo se puede ver desde la central.</div></div>`;
+        } else if (analisisIdDetalle) {
+            const imgUrl = 'https://lh3.googleusercontent.com/d/' + analisisIdDetalle;
+            bloqueImagen = `<img src="${imgUrl}" class="detalle-foto" onclick="abrirZoom('${imgUrl}')" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'detalle-sin-foto\\'><svg width=\\'48\\' height=\\'48\\' viewBox=\\'0 0 24 24\\' fill=\\'none\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'><rect x=\\'3\\' y=\\'3\\' width=\\'18\\' height=\\'18\\' rx=\\'2\\'></rect><circle cx=\\'8.5\\' cy=\\'8.5\\' r=\\'1.5\\'></circle><polyline points=\\'21 15 16 10 5 21\\'></polyline></svg><span>Foto no disponible</span></div>';">`;
         }
 
         contenido.innerHTML = `
@@ -757,7 +779,7 @@
             </div>
             <div class="detalle-foto-caja">
                 <span class="detalle-label" style="display:block;">Soporte Fotográfico</span>
-                ${bloqueImagenDetalle}
+                ${bloqueImagen}
             </div>
         `;
 
@@ -814,8 +836,16 @@
 
             setTimeout(() => {
                 try {
-                    elPinch = panzoom(img, { maxZoom: 5, minZoom: 1, bounds: true, boundsPadding: 0.1, zoomDoubleClickSpeed: 1 });
-                } catch(e) { console.error("Fallo la librería de zoom táctil", e); }
+                    elPinch = panzoom(img, {
+                        maxZoom: 5,
+                        minZoom: 1,
+                        bounds: true,
+                        boundsPadding: 0.1,
+                        zoomDoubleClickSpeed: 1
+                    });
+                } catch(e) {
+                    console.error("Fallo la librería de zoom táctil", e);
+                }
             }, 50);
         };
 
@@ -828,7 +858,10 @@
     
     function cerrarZoom() {
         document.getElementById('modalZoom').style.display = 'none';
-        if (elPinch) { elPinch.dispose(); elPinch = null; }
+        if (elPinch) {
+            elPinch.dispose(); 
+            elPinch = null;
+        }
         document.getElementById('zoomWrapper').innerHTML = ''; 
         document.body.style.overflow = '';
     }
@@ -892,9 +925,19 @@
     document.getElementById('reporteForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
+        // --- CANDADO OPERATIVO: VALIDACIÓN DE VALOR ---
         const valorInput = Number(document.getElementById('valor').value);
-        if (valorInput < 4000) { alert("❌ Error: El valor mínimo es $4.000. Escriba el número completo (ej: 4000, no 4)."); return; }
-        if (valorInput % 1000 !== 0) { alert("❌ Error: El valor debe ser exacto en múltiplos de mil (ej: 4000, 5000). Sin picos."); return; }
+        
+        if (valorInput < 4000) {
+            alert("❌ Error: El valor mínimo es $4.000. Escriba el número completo (ej: 4000, no 4).");
+            return; // Frena el envío en seco
+        }
+        
+        if (valorInput % 1000 !== 0) {
+            alert("❌ Error: El valor debe ser exacto en múltiplos de mil (ej: 4000, 5000). Sin picos.");
+            return; // Frena el envío en seco
+        }
+        // ----------------------------------------------
         
         const overlay = document.getElementById('loadingOverlay');
         const btn = document.getElementById('btnEnviar');
@@ -902,15 +945,30 @@
         btn.disabled = true;
         
         const fileInput = document.getElementById('foto').files[0];
-        if (!fileInput) { alert("📷 Debes tomar o seleccionar una foto del soporte antes de enviar."); document.getElementById('foto').focus(); btn.disabled = false; return; }
+        if (!fileInput) {
+            alert("📷 Debes tomar o seleccionar una foto del soporte antes de enviar.");
+            document.getElementById('foto').focus();
+            btn.disabled = false;
+            return;
+        }
         
-        overlay.innerHTML = `<div class="spinner"></div><div id="loadingText">Procesando foto...</div>`;
+        overlay.innerHTML = `
+            <div class="spinner"></div>
+            <div id="loadingText">Procesando foto...</div>
+        `;
         overlay.style.display = 'flex';
 
         const reader = new FileReader();
         
         reader.onerror = function() {
-            overlay.innerHTML = `<div style="text-align:center; padding:20px;"><div style="font-size:48px; margin-bottom:12px;">📷</div><div style="font-size:16px; font-weight:700; color:var(--negro); margin-bottom:8px;">Error al leer la foto</div><div style="font-size:14px; color:#888; margin-bottom:20px;">El archivo no se pudo leer correctamente.</div><button onclick="reintentarFoto()" style="background:var(--verde);color:#fff;border:none;padding:14px 30px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;width:100%;max-width:260px;">📷 Tomar foto de nuevo</button></div>`;
+            overlay.innerHTML = `
+                <div style="text-align:center; padding:20px;">
+                    <div style="font-size:48px; margin-bottom:12px;">📷</div>
+                    <div style="font-size:16px; font-weight:700; color:var(--negro); margin-bottom:8px;">Error al leer la foto</div>
+                    <div style="font-size:14px; color:#888; margin-bottom:20px;">El archivo no se pudo leer correctamente.</div>
+                    <button onclick="reintentarFoto()" style="background:var(--verde);color:#fff;border:none;padding:14px 30px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;width:100%;max-width:260px;">📷 Tomar foto de nuevo</button>
+                </div>
+            `;
             btn.disabled = false;
         };
         
@@ -920,7 +978,14 @@
             img.src = reader.result;
             
             img.onerror = function() {
-                overlay.innerHTML = `<div style="text-align:center; padding:20px;"><div style="font-size:48px; margin-bottom:12px;">🖼️</div><div style="font-size:16px; font-weight:700; color:var(--negro); margin-bottom:8px;">Imagen inválida</div><div style="font-size:14px; color:#888; margin-bottom:20px;">El archivo seleccionado no es una imagen válida.</div><button onclick="reintentarFoto()" style="background:var(--verde);color:#fff;border:none;padding:14px 30px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;width:100%;max-width:260px;">📷 Tomar foto de nuevo</button></div>`;
+                overlay.innerHTML = `
+                    <div style="text-align:center; padding:20px;">
+                        <div style="font-size:48px; margin-bottom:12px;">🖼️</div>
+                        <div style="font-size:16px; font-weight:700; color:var(--negro); margin-bottom:8px;">Imagen inválida</div>
+                        <div style="font-size:14px; color:#888; margin-bottom:20px;">El archivo seleccionado no es una imagen válida.</div>
+                        <button onclick="reintentarFoto()" style="background:var(--verde);color:#fff;border:none;padding:14px 30px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;width:100%;max-width:260px;">📷 Tomar foto de nuevo</button>
+                    </div>
+                `;
                 btn.disabled = false;
             };
             
@@ -942,7 +1007,7 @@
                     movil: document.getElementById('movil').value,
                     sede: document.getElementById('sede').value,
                     recogidas: document.getElementById('recogidas').value,
-                    factura: "'" + document.getElementById('factura').value,
+                    factura: "'" + document.getElementById('factura').value, // INYECCIÓN DEL CERO A LA IZQUIERDA
                     valor: document.getElementById('valor').value,
                     direccion: document.getElementById('direccion').value,
                     imagen: dataUrlComprimida
@@ -954,7 +1019,13 @@
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(datos)
                 }).then(() => {
-                    overlay.innerHTML = `<svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--verde)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 15px; animation: fadeSwipe 0.3s ease-out;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg><div id="loadingText" style="font-size: 16px;">¡Reporte enviado!</div>`;
+                    overlay.innerHTML = `
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--verde)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 15px; animation: fadeSwipe 0.3s ease-out;">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <div id="loadingText" style="font-size: 16px;">¡Reporte enviado!</div>
+                    `;
                     
                     setTimeout(() => {
                         overlay.style.display = 'none';
@@ -962,15 +1033,22 @@
                         btn.disabled = false;
                         
                         const btnNoAplica = document.getElementById('btnNoAplica');
-                        if (btnNoAplica) { btnNoAplica.classList.remove('seleccionado'); btnNoAplica.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> SIN RECOGIDAS`; }
+                        if (btnNoAplica) {
+                            btnNoAplica.classList.remove('seleccionado');
+                            btnNoAplica.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> SIN RECOGIDAS`;
+                        }
                         
                         pestanaActiva = 'recientes';
                         document.getElementById('btnTabRecientes').classList.add('active');
                         document.getElementById('btnTabHistorial').classList.remove('active');
                         document.getElementById('tituloVista').innerHTML = 'Servimoto FN<span class="dot">•</span><span>HOY</span>';
                         
-                        if(document.getElementById('cajaBuscador')) document.getElementById('cajaBuscador').style.display = 'none';
-                        if(document.getElementById('inputBuscador')) document.getElementById('inputBuscador').value = '';
+                        if(document.getElementById('cajaBuscador')) {
+                            document.getElementById('cajaBuscador').style.display = 'none';
+                        }
+                        if(document.getElementById('inputBuscador')) {
+                            document.getElementById('inputBuscador').value = '';
+                        }
                         
                         mostrarLista();   
                         descargarDatos(); 
